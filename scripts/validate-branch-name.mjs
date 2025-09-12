@@ -1,9 +1,9 @@
 /* eslint-disable no-undef */
 import { execSync } from 'node:child_process';
 
-const allowedPrefixes = ['feature/', 'fix/', 'hotfix/', 'improvement/'];
+const allowedPrefixes = ['feat/', 'feature', 'fix/', 'hotfix/', 'improv/', 'improvement', 'chore/', 'docs/', 'style/', 'refactor/', 'test/'];
 
-const exemptBranches = ['main', 'master', 'development', 'staging'];
+const exemptBranches = ['main', 'master', 'development', 'dev', 'staging'];
 
 try {
 	const branchName = execSync('git rev-parse --abbrev-ref HEAD')
