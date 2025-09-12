@@ -1,12 +1,51 @@
 {
-  "name": "leadlovers.api.mcpclient",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+	"name": "leadlovers.api.mcpclient",
+	"version": "1.0.0",
+	"description": "",
+	"main": "dist/index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"build": "tsc",
+		"dev": "ts-node-dev --respawn --transpile-only --inspect --ignore-watch node_modules -r tsconfig-paths/register src/index.ts",
+		"start": "node -r ts-node/register/transpile-only -r tsconfig-paths/register dist/index.js",
+		"lint": "eslint . --ext .ts --fix",
+		"prettier": "prettier src/**/*.ts --write",
+		"lint-staged": "lint-staged",
+		"validate-branch-name": "node ./scripts/validate-branch-name.mjs",
+		"prepare": "husky"
+	},
+	"lint-staged": {
+		"*.ts": [
+			"npm run lint",
+			"npm run prettier"
+		]
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"@anthropic-ai/sdk": "^0.62.0",
+		"@modelcontextprotocol/sdk": "^1.18.0",
+		"cors": "^2.8.5",
+		"dotenv": "^17.2.2",
+		"express": "^5.1.0",
+		"pino": "^9.9.5",
+		"zod": "^3.25.76"
+	},
+	"devDependencies": {
+		"@eslint/js": "^9.35.0",
+		"@types/cors": "^2.8.19",
+		"@types/express": "^5.0.3",
+		"@types/node": "^24.3.2",
+		"eslint": "^9.35.0",
+		"eslint-config-prettier": "^10.1.8",
+		"globals": "^16.4.0",
+		"husky": "^9.1.7",
+		"lint-staged": "^16.1.6",
+		"pino-pretty": "^13.1.1",
+		"prettier": "^3.6.2",
+		"ts-node-dev": "^2.0.0",
+		"typescript": "^5.9.2",
+		"typescript-eslint": "^8.43.0"
+	}
 }
