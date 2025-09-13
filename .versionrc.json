@@ -1,0 +1,76 @@
+{
+  "packageFiles": [
+    {
+      "filename": "package.json",
+      "type": "json"
+    }
+  ],
+  "bumpFiles": [
+    {
+      "filename": "package.json",
+      "type": "json"
+    }
+  ],
+  "commitUrlFormat": "https://github.com/GustavoSantosLeadLovers/LeadLovers.Api.MCPClient/commit/{{hash}}",
+  "compareUrlFormat": "https://github.com/GustavoSantosLeadLovers/LeadLovers.Api.MCPClient/compare/{{previousTag}}...{{currentTag}}",
+  "issueUrlFormat": "https://github.com/GustavoSantosLeadLovers/LeadLovers.Api.MCPClient/issues/{{id}}",
+  "userUrlFormat": "https://github.com/{{user}}",
+  "releaseCommitMessageFormat": "chore(release): {{currentTag}}",
+  "issuePrefixes": ["#"],
+  "types": [
+    {
+      "type": "feat",
+      "section": "🚀 Features"
+    },
+    {
+      "type": "fix",
+      "section": "🐛 Bug Fixes"
+    },
+    {
+      "type": "chore",
+      "section": "🔧 Maintenance",
+      "hidden": false
+    },
+    {
+      "type": "docs",
+      "section": "📚 Documentation",
+      "hidden": false
+    },
+    {
+      "type": "style",
+      "section": "💅 Code Style",
+      "hidden": true
+    },
+    {
+      "type": "refactor",
+      "section": "♻️ Code Refactoring",
+      "hidden": false
+    },
+    {
+      "type": "perf",
+      "section": "⚡ Performance Improvements",
+      "hidden": false
+    },
+    {
+      "type": "test",
+      "section": "🧪 Tests",
+      "hidden": false
+    },
+    {
+      "type": "build",
+      "section": "📦 Build System",
+      "hidden": true
+    },
+    {
+      "type": "ci",
+      "section": "👷 Continuous Integration",
+      "hidden": true
+    }
+  ],
+  "commitMessageFormat": "{{type}}{{scope}}: {{subject}}",
+  "header": "# Changelog\n\nAll notable changes to this project will be documented in this file.\n\nThe format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),\nand this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).\n",
+  "scripts": {
+    "prerelease": "npm run lint && npm run build",
+    "postbump": "echo \"Bumped version to $(node -p \"require('./package.json').version\")\""
+  }
+}

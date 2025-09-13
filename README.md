@@ -98,6 +98,14 @@ npm run prettier     # Formata código com Prettier
 
 # Utilitários
 npm run validate-branch-name  # Valida nome da branch atual
+
+# Release Management
+npm run release:generate      # Gera nova versão automaticamente
+npm run release:patch         # Força release patch (x.x.X)
+npm run release:minor         # Força release minor (x.X.x)
+npm run release:major         # Força release major (X.x.x)
+npm run release:dry-run       # Simula release sem executar
+npm run release:first         # Primeira release do projeto
 ```
 
 ## 🌐 Variáveis de Ambiente
@@ -201,6 +209,54 @@ npm start
 # Usando PM2 (recomendado)
 pm2 start dist/index.js --name leadlovers-mcp-client
 ```
+
+## 🚀 Release Management
+
+O projeto utiliza automação completa para gestão de releases com base em [Conventional Commits](https://www.conventionalcommits.org/) e [Semantic Versioning](https://semver.org/).
+
+### 📋 Processo Automático
+
+Quando uma PR é mergeada na branch principal, o sistema automaticamente:
+
+1. **Analisa commits** desde a última release
+2. **Determina o tipo de versão** (patch/minor/major)
+3. **Atualiza package.json** com nova versão
+4. **Gera CHANGELOG.md** com as mudanças
+5. **Cria tag Git** com a versão
+6. **Publica GitHub Release** com notas
+
+### 🏷️ Conventional Commits
+
+Use os prefixos padrão nos commits:
+
+- `feat:` - Nova funcionalidade (minor)
+- `fix:` - Correção de bug (patch)
+- `perf:` - Melhoria de performance (patch)
+- `refactor:` - Refatoração (patch)
+- `docs:` - Documentação (patch)
+- `chore:` - Manutenção (patch)
+- `BREAKING CHANGE:` - Mudança incompatível (major)
+
+### 🎯 Release Manual
+
+```bash
+# Gerar versão automaticamente
+npm run release:generate
+
+# Forçar tipo específico
+npm run release:patch   # 1.0.0 → 1.0.1
+npm run release:minor   # 1.0.0 → 1.1.0
+npm run release:major   # 1.0.0 → 2.0.0
+
+# Simular sem executar
+npm run release:dry-run
+```
+
+### 📈 Versionamento Semântico
+
+- **MAJOR** (X.y.z) - Mudanças incompatíveis na API
+- **MINOR** (x.Y.z) - Novas funcionalidades compatíveis
+- **PATCH** (x.y.Z) - Correções de bugs compatíveis
 
 ## 🤝 Contribuindo
 
