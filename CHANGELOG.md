@@ -5,7 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## 1.1.0 (2025-09-13)
+
+
+### 📚 Documentation
+
+* add comprehensive project documentation ([d8f332c](https://github.com/GustavoSantosLeadLovers/LeadLovers.Api.MCPClient/commit/d8f332c15434b8d37a8012c879b26594e6f4bd3c))
+
+
+### 🔧 Maintenance
+
+* update environment variables example file ([b076091](https://github.com/GustavoSantosLeadLovers/LeadLovers.Api.MCPClient/commit/b076091a064799eb9eae428d7e6360ea10b621f8))
+
+
+### 🚀 Features
+
+* add Swagger/OpenAPI dependencies for API documentation ([46e5a13](https://github.com/GustavoSantosLeadLovers/LeadLovers.Api.MCPClient/commit/46e5a1363ed9e979a238bedf4acfdb9c52f7f671))
+* configure project dependencies and scripts ([f06d677](https://github.com/GustavoSantosLeadLovers/LeadLovers.Api.MCPClient/commit/f06d677c897e0d07931ca46322bc855d43dbe339))
+* cria estrutura inicial do projeto ([c973670](https://github.com/GustavoSantosLeadLovers/LeadLovers.Api.MCPClient/commit/c973670337e291a088a3e910d88781253b9abd24))
+* expand allowed branch name patterns and exempt branches ([11e008c](https://github.com/GustavoSantosLeadLovers/LeadLovers.Api.MCPClient/commit/11e008cd4c4d711169655c24259c6623d64561d3))
+* implement automated release management system ([a071126](https://github.com/GustavoSantosLeadLovers/LeadLovers.Api.MCPClient/commit/a071126adf9c194678d4eafa613d2e5954d90d56))
+* implement graceful shutdown for server ([e6316ae](https://github.com/GustavoSantosLeadLovers/LeadLovers.Api.MCPClient/commit/e6316ae8ad150d178e51a7b81a8a610acbd19f6e))
+* implement MCP client HTTP server infrastructure ([a0e01fc](https://github.com/GustavoSantosLeadLovers/LeadLovers.Api.MCPClient/commit/a0e01fc93a069bebf860c850e59df35691722e58))
+* implement Swagger/OpenAPI configuration ([848ce4b](https://github.com/GustavoSantosLeadLovers/LeadLovers.Api.MCPClient/commit/848ce4b1328dfb83c5349cbec742c93a7f0aed1a))
+* integrate Swagger UI with Express server and document endpoints ([75e8a1e](https://github.com/GustavoSantosLeadLovers/LeadLovers.Api.MCPClient/commit/75e8a1e118e0a8164c1df731227b0972e31ea756))
 
 ## [1.0.0] - 2025-01-15
 
