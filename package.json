@@ -12,6 +12,7 @@
 		"prettier": "prettier src/**/*.ts --write",
 		"lint-staged": "lint-staged",
 		"validate-branch-name": "node ./scripts/validate-branch-name.mjs",
+		"cleanup-branches": "node ./scripts/cleanup-branches-auto.mjs",
 		"prepare": "husky",
 		"release:generate": "standard-version --no-verify",
 		"release:patch": "standard-version --release-as patch --no-verify",
