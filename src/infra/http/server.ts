@@ -1,9 +1,11 @@
 import cors from 'cors';
 import express, { Application } from 'express';
 import { Server } from 'node:http';
+import swaggerUi from 'swagger-ui-express';
 
 import { variables } from '@src/shared/configs/variables';
 import logger from '../logger/pinoLogger';
+import { swaggerSpec } from '../swagger/config';
 import { routes } from './routes';
 
 export class ExpressApp {
@@ -36,12 +38,32 @@ export class ExpressApp {
 		this.app.use(cors(options));
 	}
 
+	private setupSwagger(): void {
+		const isDev = variables.server.NODE_ENV !== 'production';
+		if (isDev) {
+			this.app.use(
+				'/api-docs',
+				swaggerUi.serve,
+				swaggerUi.setup(swaggerSpec, {
+					explorer: true,
+					customSiteTitle: 'LeadLovers MCP Client API Documentation',
+					customfavIcon: '/favicon.ico',
+					swaggerOptions: {
+						persistAuthorization: true,
+					},
+				}),
+			);
+			logger.info('Swagger documentation available at /api-docs');
+		}
+	}
+
 	private setupRoutes(): void {
 		this.app.use('/v1', routes());
 	}
 
 	public listen(): Server {
 		this.setCors();
+		this.setupSwagger();
 		this.setupRoutes();
 		return this.app.listen(this.port, () =>
 			logger.info(`Server running in port: ${this.port}`),
