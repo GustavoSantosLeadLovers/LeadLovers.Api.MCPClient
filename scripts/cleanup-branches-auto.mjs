@@ -8,6 +8,7 @@
  */
 
 import { execSync } from 'child_process';
+import process from 'node:process';
 
 // Cores para output
 const colors = {
@@ -29,6 +30,7 @@ function execCommand(command, silent = false) {
     const output = execSync(command, { encoding: 'utf8', stdio: silent ? 'pipe' : 'inherit' });
     return output?.trim();
   } catch (error) {
+    console.error(error);
     if (!silent) {
       log(`❌ Erro ao executar: ${command}`, 'red');
     }
