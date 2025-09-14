@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0](https://github.com/GustavoSantosLeadLovers/LeadLovers.Api.MCPClient/compare/v1.1.0...v1.2.0) (2025-09-14)
+
+
+### 🚀 Features
+
+* add automated branch cleanup script ([4164226](https://github.com/GustavoSantosLeadLovers/LeadLovers.Api.MCPClient/commit/4164226611d0b9a26980dfb0053a6457d65fb5e1))
+
+
+### 🐛 Bug Fixes
+
+* improve error handling in branch cleanup script ([a04a973](https://github.com/GustavoSantosLeadLovers/LeadLovers.Api.MCPClient/commit/a04a973d4de550569ac4028200aee26f4e1709b4))
+
 ## 1.1.0 (2025-09-13)
 
 
