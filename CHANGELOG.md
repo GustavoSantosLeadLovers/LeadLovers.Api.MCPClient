@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0](https://github.com/GustavoSantosLeadLovers/LeadLovers.Api.MCPClient/compare/v1.2.0...v1.3.0) (2025-09-15)
+
+
+### 🚀 Features
+
+* implement identity module with SSO integration ([bb81b14](https://github.com/GustavoSantosLeadLovers/LeadLovers.Api.MCPClient/commit/bb81b141c368c8381d20f5b3d4592dd56624e3bf))
+
+
+### 📚 Documentation
+
+* add comprehensive Swagger documentation for identity module ([87adb0c](https://github.com/GustavoSantosLeadLovers/LeadLovers.Api.MCPClient/commit/87adb0c7025f21b7c938e7b67dcbf225a10be8c6))
+
 ## [1.2.0](https://github.com/GustavoSantosLeadLovers/LeadLovers.Api.MCPClient/compare/v1.1.0...v1.2.0) (2025-09-14)
 
 
