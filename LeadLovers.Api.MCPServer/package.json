@@ -5,9 +5,9 @@
   "main": "dist/server/index.js",
   "type": "module",
   "scripts": {
-    "build": "tsc && tsc-alias --resolve-full-paths",
+    "build": "tsc && tsc-alias",
     "dev": "tsx --watch src/server/index.ts",
-    "start": "node dist/server/index",
+    "start": "node dist/server/index.js",
     "test": "jest --detectOpenHandles",
     "test:watch": "jest --watch",
     "coverage": "jest --coverage",

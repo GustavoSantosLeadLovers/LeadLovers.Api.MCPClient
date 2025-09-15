@@ -1,31 +1,18 @@
-import { config } from 'dotenv';
+import * as dotenv from 'dotenv';
 import { z } from 'zod';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
-// Get the directory of this file
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Load .env from the project root directory
-const envPath = path.join(__dirname, '../../.env');
-const dotenvResult = config({ path: envPath, debug: false });
-
-// Log if .env failed to load (helpful for debugging)
-if (dotenvResult.error) {
-  process.stderr.write(`[Config] Failed to load .env from ${envPath}: ${dotenvResult.error}\n`);
-}
+dotenv.config();
 
 const configSchema = z.object({
   // LeadLovers API
-  LEADLOVERS_API_URL: z.string().url().default('https://llapi.leadlovers.com/webapi'),
+  LEADLOVERS_API_URL: z.url().default('https://llapi.leadlovers.com/webapi'),
   LEADLOVERS_API_TOKEN: z.string().min(1, 'LeadLovers API token is required'),
 
   // SSO Authentication
-  SSO_API_URL: z.string().url().default('https://globalnotifications-api.leadlovers.com'),
-  SSO_TOKEN: z.string().min(1, 'SSO token is required'),
-  SSO_REFRESH_TOKEN: z.string().min(1, 'SSO refresh token is required'),
-  SSO_USER_TOKEN: z.string().min(1, 'SSO user token is required'),
+  SSO_API_URL: z.url().default('https://globalnotifications-api.leadlovers.com'),
+  SSO_TOKEN: z.string().optional(),
+  SSO_REFRESH_TOKEN: z.string().optional(),
+  SSO_USER_TOKEN: z.string().optional(),
   SSO_USER_ID: z.coerce.number().optional(),
   SSO_KEY: z.string().optional(),
 
