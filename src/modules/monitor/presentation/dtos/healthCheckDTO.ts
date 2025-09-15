@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const HealthCheckResponse = z.object({
+export const healthCheckOutput = z.object({
 	status: z.string(),
 	serverInfo: z.object({
 		version: z.number().int().nonnegative(),
@@ -10,4 +10,4 @@ export const HealthCheckResponse = z.object({
 	}),
 });
 
-export type HealthCheckResponse = z.infer<typeof HealthCheckResponse>;
+export type HealthCheckOutput = z.infer<typeof healthCheckOutput>;

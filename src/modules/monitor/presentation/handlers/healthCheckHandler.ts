@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 
 import logger from '@infra/logger/pinoLogger';
 import { variables } from '@shared/configs/variables';
-import { HealthCheckResponse } from '../dtos/healthCheckResponse';
+import { healthCheckOutput } from '../dtos/healthCheckDTO';
 
 export class HealthCheckHandler {
 	public async handle(_: Request, response: Response) {
@@ -15,7 +15,7 @@ export class HealthCheckHandler {
 				uptime: process.uptime(),
 			},
 		};
-		const output = HealthCheckResponse.safeParse(data);
+		const output = healthCheckOutput.safeParse(data);
 		if (output.error) {
 			logger.error(output.error);
 			response.status(500).json(output.error);
