@@ -24,8 +24,14 @@
     "noUnusedParameters": true,
     "outDir": "./dist",
     "paths": {
-      "@src/*": [
-        "./src/*"
+      "@infra/*": [
+        "./src/infra/*"
+      ],
+      "@modules/*": [
+        "./src/modules/*"
+      ],
+      "@shared/*": [
+        "./src/shared/*"
       ],
     },
     "removeComments": true,

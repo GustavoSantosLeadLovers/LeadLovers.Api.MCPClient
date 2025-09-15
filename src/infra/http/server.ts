@@ -3,7 +3,7 @@ import express, { Application } from 'express';
 import { Server } from 'node:http';
 import swaggerUi from 'swagger-ui-express';
 
-import { variables } from '@src/shared/configs/variables';
+import { variables } from '@shared/configs/variables';
 import logger from '../logger/pinoLogger';
 import { swaggerSpec } from '../swagger/config';
 import { routes } from './routes';

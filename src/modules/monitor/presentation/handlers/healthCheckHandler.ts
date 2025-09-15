@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
-import logger from '@src/infra/logger/pinoLogger';
-import { variables } from '@src/shared/configs/variables';
+import logger from '@infra/logger/pinoLogger';
+import { variables } from '@shared/configs/variables';
 import { HealthCheckResponse } from '../dtos/healthCheckResponse';
 
 export class HealthCheckHandler {

@@ -13,25 +13,50 @@ LeadLovers.Api.MCPClient/
 │   │   ├── http/                 # Configuração HTTP
 │   │   │   ├── routes/           # Definição de rotas
 │   │   │   │   ├── index.ts      # Agregador de rotas
-│   │   │   │   └── monitor.ts    # Rotas de monitoramento
+│   │   │   │   ├── monitor.ts    # Rotas de monitoramento
+│   │   │   │   └── identity.ts   # Rotas de autenticação/identidade
 │   │   │   └── server.ts         # Configuração do servidor Express
 │   │   ├── logger/               # Sistema de logging
 │   │   │   └── pinoLogger.ts     # Configuração do Pino
 │   │   └── swagger/              # Documentação da API
 │   │       └── config.ts         # Configuração do Swagger/OpenAPI
 │   ├── modules/                  # Módulos de domínio
-│   │   └── monitor/              # Módulo de monitoramento
+│   │   ├── monitor/              # Módulo de monitoramento
+│   │   │   └── presentation/     # Camada de apresentação
+│   │   │       ├── dtos/         # Data Transfer Objects
+│   │   │       │   └── healthCheckResponse.ts
+│   │   │       └── handlers/     # Manipuladores de requisição
+│   │   │           └── healthCheckHandler.ts
+│   │   └── identity/             # Módulo de identidade/autenticação
+│   │       ├── application/      # Camada de aplicação
+│   │       │   ├── createSessionPayloadService.ts
+│   │       │   └── validateSSOTokenService.ts
+│   │       ├── external/         # Integrações externas
+│   │       │   └── sso/
+│   │       │       └── leadloversSSO.ts
 │   │       └── presentation/     # Camada de apresentação
-│   │           ├── dtos/         # Data Transfer Objects
-│   │           │   └── healthCheckResponse.ts
-│   │           └── handlers/     # Manipuladores de requisição
-│   │               └── healthCheckHandler.ts
+│   │           ├── dtos/
+│   │           │   └── createSessionDTO.ts
+│   │           └── handlers/
+│   │               └── createSessionHandler.ts
 │   ├── shared/                   # Recursos compartilhados
 │   │   ├── configs/              # Configurações da aplicação
 │   │   │   └── variables/        # Variáveis de ambiente
 │   │   │       ├── index.ts      # Agregador de configurações
+│   │   │       ├── auth.ts       # Config de autenticação
 │   │   │       ├── logger.ts     # Config do logger
 │   │   │       └── server.ts     # Config do servidor
+│   │   ├── integration/          # Contratos de integração
+│   │   │   └── interfaces/
+│   │   │       └── ssoProvider.ts
+│   │   ├── providers/            # Provedores de serviços externos
+│   │   │   └── LeadloversSSO/
+│   │   │       ├── interfaces/
+│   │   │       │   ├── leadloversSSOProvider.ts
+│   │   │       │   ├── leadloversSSOSession.ts
+│   │   │       │   └── leadloversSSOUser.ts
+│   │   │       └── implementations/
+│   │   │           └── leadloversSSOProvider.ts
 │   │   └── utils/                # Utilitários
 │   │       └── gracefulShutdown.ts
 │   └── index.ts                  # Ponto de entrada da aplicação
@@ -100,6 +125,27 @@ monitor/
         └── healthCheckHandler.ts
 ```
 
+#### Identity (`src/modules/identity/`)
+
+**Responsabilidade**: Gerenciar autenticação e autorização via SSO.
+
+**Estrutura em Camadas**:
+
+```
+identity/
+├── application/          # Camada de Aplicação
+│   ├── createSessionPayloadService.ts  # Criação de payload JWT
+│   └── validateSSOTokenService.ts      # Validação de tokens SSO
+├── external/            # Integrações Externas
+│   └── sso/
+│       └── leadloversSSO.ts            # Adapter para LeadLovers SSO
+└── presentation/        # Camada de Apresentação
+    ├── dtos/
+    │   └── createSessionDTO.ts         # DTOs de sessão
+    └── handlers/
+        └── createSessionHandler.ts     # Handler de criação de sessão
+```
+
 **Futuras Expansões**:
 ```
 monitor/
@@ -165,6 +211,34 @@ sequenceDiagram
     H->>C: JSON Response (200)
 ```
 
+### Session Creation Flow (Identity Module)
+
+```mermaid
+sequenceDiagram
+    participant C as Cliente
+    participant R as Router
+    participant H as CreateSessionHandler
+    participant V as ValidateSSOTokenService
+    participant S as LeadloversSSO
+    participant P as CreateSessionPayloadService
+    participant J as JWT
+
+    C->>R: POST /v1/sessions {token, refreshToken}
+    R->>H: handle(req, res)
+    H->>H: Valida entrada com Zod
+    H->>V: validateSSOTokenService.execute()
+    V->>S: LeadloversSSO.validateToken()
+    S->>S: Valida token via API externa
+    S-->>V: Dados do usuário validado
+    V-->>H: {id, email, name}
+    H->>P: createSessionPayloadService.execute()
+    P->>J: Cria JWT com dados do usuário
+    J-->>P: Token JWT assinado
+    P-->>H: {token, email, name}
+    H->>H: Valida saída com Zod
+    H->>C: JSON Response (201) {status, result}
+```
+
 ## 🛡️ Padrões de Segurança
 
 ### Validação de Dados
@@ -202,12 +276,16 @@ sequenceDiagram
 ```
 src/modules/
 ├── monitor/              # ✅ Implementado
+├── identity/             # ✅ Implementado
+│   ├── application/
+│   ├── external/
+│   └── presentation/
 ├── mcp/                  # 🔄 Em desenvolvimento
 │   ├── application/
 │   ├── domain/
 │   ├── infrastructure/
 │   └── presentation/
-└── auth/                 # 📋 Planejado
+└── auth/                 # 📋 Planejado (expansão do identity)
     ├── application/
     ├── domain/
     ├── infrastructure/

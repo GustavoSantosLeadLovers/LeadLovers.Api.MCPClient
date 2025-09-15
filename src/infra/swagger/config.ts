@@ -1,5 +1,6 @@
 import swaggerJsdoc from 'swagger-jsdoc';
-import { variables } from '@src/shared/configs/variables';
+
+import { variables } from '@shared/configs/variables';
 
 const options: swaggerJsdoc.Options = {
 	definition: {
