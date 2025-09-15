@@ -1,0 +1,16 @@
+{
+  "status": "commited",
+  "type": "backend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:3000",
+  "backendAuthType": "public",
+  "executionArgs": {
+    "projectName": "leadlovers-mcp",
+    "projectPath": "F:\\Leadlovers.MCP",
+    "testIds": [],
+    "additionalInstruction": "Focus on achieving high test coverage for the tools directory, especially the functions in src/tools/leads/, src/tools/machines/, and src/tools/email-sequence/. Generate comprehensive unit tests that cover all edge cases, error scenarios, and successful executions. Mock the LeadLoversAPIService properly for all tests.",
+    "envs": {
+      "API_KEY": "sk-user-Ug9FDr1N6KcLkthnA08C-tPT6JYIRG8prqIedUM1L46bchjxQOGIRwbr1lvOrJfmIyEAzL4MwpKrns_vxnIDRwF012EdtvrkCJ3yIxjcjlkQFXT4Z7X2RzXg1slZb_vXmrM"
+    }
+  }
+}
