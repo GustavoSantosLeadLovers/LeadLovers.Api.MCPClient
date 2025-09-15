@@ -1,9 +1,9 @@
 import { GetLeadsInput, getLeadsSchema } from 'schemas/leads';
-import { MCPToolResult, McpToolSchema } from 'types/mcp';
-import { Lead } from 'types/leadlovers';
 import { LeadLoversAPIService } from 'services/leadlovers-api';
-import { MessageFormatter } from '../../utils/message-formatter';
+import { Lead } from 'types/leadlovers';
+import { MCPToolResult, McpToolSchema } from 'types/mcp';
 import { ZodError } from 'zod';
+import { MessageFormatter } from '../../utils/message-formatter';
 
 export const getLeadsTool: McpToolSchema = {
   name: 'get_leads',
@@ -101,7 +101,7 @@ export async function executeGetLeads(
 
   // Formatar lista de leads de forma mais legível
   const leadsList = response.Data.map((lead: Lead) => {
-    const parts = [];
+    const parts: string[] = [];
     if (lead.Name) parts.push(`**${lead.Name}**`);
     if (lead.Email) parts.push(`📧 ${lead.Email}`);
     if (lead.Company) parts.push(`🏢 ${lead.Company}`);

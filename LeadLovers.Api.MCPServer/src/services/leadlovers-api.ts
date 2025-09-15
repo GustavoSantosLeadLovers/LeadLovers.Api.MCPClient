@@ -1,4 +1,6 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { GetEmailSequencesInput } from 'schemas/emailSequence';
+import { GetMachinesInput } from 'schemas/machines';
 import type {
   ApiResponse,
   CreateLeadResponse,
@@ -8,7 +10,7 @@ import type {
   GetMachinesResponse,
   GetSequenceEmailsResponse,
   UpdateLeadResponse,
-} from '../types/leadlovers';
+} from 'types/leadlovers';
 import type {
   CreateLeadInput,
   DeleteLeadInput,
@@ -16,8 +18,6 @@ import type {
   UpdateLeadInput,
 } from '../schemas/leads';
 import { appConfig } from '../server/config';
-import { GetMachinesInput } from 'schemas/machines';
-import { GetEmailSequencesInput } from 'schemas/emailSequence';
 
 export class LeadLoversAPIService {
   private api: AxiosInstance;

@@ -3,28 +3,27 @@
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import {
   CallToolRequestSchema,
-  ListToolsRequestSchema,
   CallToolResult,
+  ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 
-import { appConfig } from './config';
 import { LeadLoversAPIService } from '../services/leadlovers-api';
+import { appConfig } from './config';
 
-import { Server } from '@modelcontextprotocol/sdk/server';
-import { executeCreateLead, createLeadTool } from '../tools/leads/create-lead';
-import { executeGetMachines, getMachinesTool } from 'tools/machines/get-machines';
+import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import {
   executeGetEmailSequences,
   getEmailSequencesTool,
 } from 'tools/email-sequence/get-email-sequence';
+import { deleteLeadTool, executeDeleteLead } from 'tools/leads/delete-lead';
+import { executeGetLeads, getLeadsTool } from 'tools/leads/get-leads';
+import { executeUpdateLead, updateLeadTool } from 'tools/leads/update-lead';
 import {
   executeGetMachineDetails,
   getMachineDetailsTool,
 } from 'tools/machines/get-machine-details';
-import { executeUpdateLead, updateLeadTool } from 'tools/leads/update-lead';
-import { deleteLeadTool, executeDeleteLead } from 'tools/leads/delete-lead';
-import { executeGetLeads, getLeadsTool } from 'tools/leads/get-leads';
-import { get } from 'http';
+import { executeGetMachines, getMachinesTool } from 'tools/machines/get-machines';
+import { createLeadTool, executeCreateLead } from '../tools/leads/create-lead';
 
 class LeadLoversMCPServer {
   private server: Server;

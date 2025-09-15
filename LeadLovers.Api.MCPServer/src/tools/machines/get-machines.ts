@@ -1,8 +1,8 @@
 import { GetMachinesInput, getMachinesSchema } from 'schemas/machines';
 import { LeadLoversAPIService } from 'services/leadlovers-api';
 import { MCPToolResult, McpToolSchema } from 'types/mcp';
-import { MessageFormatter, formatMachineSuccess } from '../../utils/message-formatter';
 import { ZodError } from 'zod';
+import { MessageFormatter, formatMachineSuccess } from '../../utils/message-formatter';
 
 export const getMachinesTool: McpToolSchema = {
   name: 'get_machines',

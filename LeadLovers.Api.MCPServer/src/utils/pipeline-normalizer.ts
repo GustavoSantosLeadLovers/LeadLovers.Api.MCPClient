@@ -1,9 +1,9 @@
 import {
-  MoveCardResponse,
-  PipelineCard,
-  NormalizedPipelineCard,
   MoveCardMCPResponse,
-} from '../types/pipeline-responses';
+  MoveCardResponse,
+  NormalizedPipelineCard,
+  PipelineCard,
+} from 'types/pipeline-responses';
 
 /**
  * Utility functions for normalizing LeadLovers Pipeline API responses
