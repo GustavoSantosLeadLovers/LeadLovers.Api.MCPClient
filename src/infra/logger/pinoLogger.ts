@@ -1,6 +1,6 @@
 import pino from 'pino';
 
-import { variables } from '@src/shared/configs/variables';
+import { variables } from '@shared/configs/variables';
 
 const isDev = variables.server.NODE_ENV !== 'production';
 const targets = [];

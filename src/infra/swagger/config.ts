@@ -1,5 +1,6 @@
 import swaggerJsdoc from 'swagger-jsdoc';
-import { variables } from '@src/shared/configs/variables';
+
+import { variables } from '@shared/configs/variables';
 
 const options: swaggerJsdoc.Options = {
 	definition: {
@@ -73,6 +74,60 @@ const options: swaggerJsdoc.Options = {
 					},
 					required: ['status', 'serverInfo'],
 				},
+				CreateSessionRequest: {
+					type: 'object',
+					properties: {
+						token: {
+							type: 'string',
+							description: 'Token de acesso SSO',
+							example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+						},
+						refreshToken: {
+							type: 'string',
+							description: 'Token de atualização SSO',
+							example: 'refresh_token_example_here',
+						},
+					},
+					required: ['token', 'refreshToken'],
+				},
+				CreateSessionResponse: {
+					type: 'object',
+					properties: {
+						token: {
+							type: 'string',
+							description:
+								'JWT token para autenticação da sessão',
+							example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+						},
+						name: {
+							type: 'string',
+							description: 'Nome do usuário',
+							example: 'João Silva',
+						},
+						email: {
+							type: 'string',
+							format: 'email',
+							description: 'Email do usuário',
+							example: 'joao.silva@exemplo.com',
+						},
+					},
+					required: ['token', 'name', 'email'],
+				},
+				ApiResponse: {
+					type: 'object',
+					properties: {
+						status: {
+							type: 'string',
+							enum: ['success', 'error'],
+							description: 'Status da resposta',
+						},
+						result: {
+							description:
+								'Dados da resposta ou detalhes do erro',
+						},
+					},
+					required: ['status', 'result'],
+				},
 				ErrorResponse: {
 					type: 'object',
 					properties: {
@@ -109,6 +164,11 @@ const options: swaggerJsdoc.Options = {
 			{
 				name: 'Monitor',
 				description: 'Endpoints para monitoramento da aplicação',
+			},
+			{
+				name: 'Identity',
+				description:
+					'Endpoints para autenticação e gerenciamento de sessão',
 			},
 			{
 				name: 'MCP',
