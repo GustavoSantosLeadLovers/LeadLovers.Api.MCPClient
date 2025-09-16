@@ -1,4 +1,5 @@
 import { Server } from 'http';
+import { RedisClient } from '@shared/providers/Redis/redisClient';
 
 export interface GracefulShutdownOptions {
 	timeout?: number;
@@ -67,6 +68,16 @@ export class GracefulShutdown {
 					});
 				});
 				console.log('HTTP server closed successfully');
+			}
+
+			// Close Redis connections
+			try {
+				console.log('Closing Redis connections...');
+				const redisClient = RedisClient.getInstance();
+				await redisClient.disconnect();
+				console.log('Redis connections closed successfully');
+			} catch (redisError) {
+				console.error('Error closing Redis connections:', redisError);
 			}
 
 			clearTimeout(shutdownTimeout);

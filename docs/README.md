@@ -15,6 +15,7 @@ Esta pasta contém toda a documentação técnica do LeadLovers MCP Client API.
 
 ### 🔧 Documentação Específica
 - [**swagger-setup.md**](swagger-setup.md) - Configuração e uso do Swagger
+- [**WEBSOCKET.md**](WEBSOCKET.md) - Servidor WebSocket e comunicação em tempo real
 
 ## 🎯 Para Diferentes Perfis
 
@@ -48,6 +49,7 @@ Esta pasta contém toda a documentação técnica do LeadLovers MCP Client API.
 | DEVELOPMENT.md | ✅ Completo | 2025-01-15 |
 | SETUP.md | ✅ Completo | 2025-01-15 |
 | swagger-setup.md | ✅ Completo | 2025-01-15 |
+| WEBSOCKET.md | ✅ Completo | 2025-01-16 |
 
 ## 🔄 Próximas Adições
 

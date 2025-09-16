@@ -1,4 +1,4 @@
-import ISSOProvider from '@shared/integration/interfaces/ssoProvider';
+import ISSOProvider from '@modules/identity/external/sso/interfaces/ssoProvider';
 
 type SSOPayload = {
 	id: string;

@@ -138,7 +138,10 @@ identity/
 │   └── validateSSOTokenService.ts      # Validação de tokens SSO
 ├── external/            # Integrações Externas
 │   └── sso/
-│       └── leadloversSSO.ts            # Adapter para LeadLovers SSO
+│       ├── interfaces/                # Interfaces SSO
+│       └── implementations/           # Implementações SSO
+├── integration/                        # Integração com APIs
+│   └── identityPublicAPI.ts           # API pública de identidade
 └── presentation/        # Camada de Apresentação
     ├── dtos/
     │   └── createSessionDTO.ts         # DTOs de sessão
@@ -237,6 +240,33 @@ sequenceDiagram
     P-->>H: {token, email, name}
     H->>H: Valida saída com Zod
     H->>C: JSON Response (201) {status, result}
+```
+
+### WebSocket Connection Flow
+
+```mermaid
+sequenceDiagram
+    participant C as Cliente WebSocket
+    participant WS as WebSocket Server
+    participant Auth as AuthMiddleware
+    participant API as IdentityPublicAPI
+    participant Redis as Redis Cache
+    participant H as Handler
+
+    C->>WS: Conectar com token
+    WS->>Auth: validateTokenJWT()
+    Auth->>API: validateJWTToken(token)
+    API-->>Auth: Dados do usuário
+    Auth-->>WS: Usuário autenticado
+    WS->>Redis: Verificar conexão existente
+    Redis-->>WS: ID de socket anterior (se existir)
+    WS->>WS: Desconectar socket anterior
+    WS->>Redis: Armazenar nova conexão
+    WS->>C: Conexão estabelecida
+    C->>WS: send-prompt {prompt}
+    WS->>H: handlePromptRequest()
+    H-->>WS: Resposta do prompt
+    WS->>C: prompt-response {result}
 ```
 
 ## 🛡️ Padrões de Segurança
