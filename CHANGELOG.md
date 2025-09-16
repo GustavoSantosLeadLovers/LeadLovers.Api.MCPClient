@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v2.0.1] - 2025-09-16
+
+### Changes
+
+
+
+All notable changes to this project will be documented in this file.
+
 ## [v2.0.0] - 2025-09-16
 
 ### Changes
