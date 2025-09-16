@@ -87,6 +87,16 @@ DOMAIN_URL=
 LOG_LEVEL=info
 
 # =============================================================================
+# CONFIGURAÇÃO DE AUTENTICAÇÃO
+# =============================================================================
+
+# URL do servidor SSO
+SSO_API_URL=https://sso.leadlovers.com/
+
+# Chave secreta para JWT (mude para uma chave segura em produção)
+API_SECRET=TESTE
+
+# =============================================================================
 # CONFIGURAÇÕES FUTURAS (MCP/IA)
 # =============================================================================
 
@@ -139,6 +149,25 @@ DOMAIN_URL=
 DOMAIN_URL=https://app.leadlovers.com,https://dashboard.leadlovers.com
 # Permite apenas domínios específicos
 ```
+
+### Configuração de Autenticação
+
+#### SSO (Single Sign-On)
+```bash
+# URL do servidor SSO LeadLovers
+SSO_API_URL=https://sso.leadlovers.com/
+```
+
+#### JWT Secret
+```bash
+# Desenvolvimento/Teste
+API_SECRET=TESTE
+
+# Produção (use uma chave forte)
+API_SECRET=sua-chave-secreta-complexa-aqui
+```
+
+⚠️ **Importante**: Em produção, sempre use uma chave secreta forte e única. Nunca commite a chave real no repositório.
 
 ### Configuração de Logs
 

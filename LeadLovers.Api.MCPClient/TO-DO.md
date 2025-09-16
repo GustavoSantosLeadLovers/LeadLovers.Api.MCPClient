@@ -1,4 +1,7 @@
 1. Analise as modificações feitas.
+    1.1. Procure erros de ortografia
+    1.2. Procure nomes fora dos padrões do projeto
+    1.3. Procure erros de lógica
 
 2. Crie uma branch nova
 

@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Teste com Autenticação JWT</title>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 800px;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .status.connected {
+            background: rgba(52, 211, 153, 0.2);
+            color: #10b981;
+        }
+
+        .status.disconnected {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .status.authenticating {
+            background: rgba(251, 191, 36, 0.2);
+            color: #f59e0b;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .auth-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .auth-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .auth-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .input-group label {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .input-group input {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        button.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        button.secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        button.secondary:hover {
+            background: #e0e0e0;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .chat-section {
+            margin-top: 30px;
+        }
+
+        .chat-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .prompt-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .prompt-container input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .prompt-container input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .messages {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .message {
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .message.sent {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin-left: auto;
+            max-width: 70%;
+        }
+
+        .message.received {
+            background: white;
+            border: 1px solid #e0e0e0;
+            max-width: 70%;
+        }
+
+        .message.system {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .message-time {
+            font-size: 11px;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+
+        .token-display {
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            word-break: break-all;
+            margin-top: 10px;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+
+        .user-info {
+            background: #e8f5e9;
+            border: 1px solid #4caf50;
+            color: #2e7d32;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 WebSocket com Autenticação JWT</h1>
+            <div id="status" class="status disconnected">Desconectado</div>
+        </div>
+
+        <div class="content">
+            <div class="auth-section">
+                <h2>🔐 Autenticação</h2>
+
+                <div class="auth-grid">
+                    <div class="input-group">
+                        <label for="ssoToken">SSO Token</label>
+                        <input type="text" id="ssoToken" placeholder="Digite o token SSO">
+                    </div>
+                    <div class="input-group">
+                        <label for="refreshToken">Refresh Token</label>
+                        <input type="text" id="refreshToken" placeholder="Digite o refresh token">
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="primary" onclick="getJWTToken()">Obter Token JWT</button>
+                    <button class="secondary" onclick="connectWithToken()">Conectar WebSocket</button>
+                    <button class="secondary" onclick="disconnect()">Desconectar</button>
+                </div>
+
+                <div id="tokenDisplay" class="token-display" style="display: none;">
+                    <strong>JWT Token:</strong> <span id="jwtToken"></span>
+                </div>
+
+                <div id="userInfo" class="user-info" style="display: none;">
+                    <strong>Usuário Autenticado:</strong> <span id="userDetails"></span>
+                </div>
+            </div>
+
+            <div class="chat-section">
+                <h2>💬 Teste de Prompt Autenticado</h2>
+
+                <div class="prompt-container">
+                    <input type="text" id="promptInput" placeholder="Digite seu prompt aqui..." disabled>
+                    <button class="primary" onclick="sendPrompt()" id="sendButton" disabled>Enviar</button>
+                </div>
+
+                <div class="messages" id="messages">
+                    <div class="message system">
+                        Sistema pronto. Configure a autenticação para começar.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let socket = null;
+        let jwtToken = null;
+        let userInfo = null;
+
+        // Configuração da API
+        const API_URL = 'http://localhost:4444';
+        const WS_URL = 'http://localhost:4444';
+
+        function updateStatus(status, text) {
+            const statusEl = document.getElementById('status');
+            statusEl.className = `status ${status}`;
+            statusEl.textContent = text;
+        }
+
+        function addMessage(content, type = 'system') {
+            const messagesEl = document.getElementById('messages');
+            const messageEl = document.createElement('div');
+            messageEl.className = `message ${type}`;
+
+            const time = new Date().toLocaleTimeString('pt-BR');
+            messageEl.innerHTML = `
+                ${content}
+                <div class="message-time">${time}</div>
+            `;
+
+            messagesEl.appendChild(messageEl);
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+        }
+
+        async function getJWTToken() {
+            const ssoToken = document.getElementById('ssoToken').value;
+            const refreshToken = document.getElementById('refreshToken').value;
+
+            if (!ssoToken || !refreshToken) {
+                addMessage('Por favor, preencha ambos os tokens SSO e Refresh.', 'error');
+                return;
+            }
+
+            updateStatus('authenticating', 'Autenticando...');
+            addMessage('Obtendo token JWT...', 'system');
+
+            try {
+                const response = await fetch(`${API_URL}/v1/sessions`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        token: ssoToken,
+                        refreshToken: refreshToken
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    jwtToken = data.result.token;
+                    userInfo = {
+                        email: data.result.email,
+                        name: data.result.name
+                    };
+
+                    // Exibir token e informações do usuário
+                    document.getElementById('jwtToken').textContent = jwtToken;
+                    document.getElementById('tokenDisplay').style.display = 'block';
+
+                    document.getElementById('userDetails').textContent =
+                        `${userInfo.name} (${userInfo.email})`;
+                    document.getElementById('userInfo').style.display = 'block';
+
+                    addMessage(`Token JWT obtido com sucesso! Usuário: ${userInfo.name}`, 'system');
+                    updateStatus('disconnected', 'Token obtido - Pronto para conectar');
+                } else {
+                    throw new Error(data.result?.message || 'Falha na autenticação');
+                }
+            } catch (error) {
+                console.error('Erro ao obter JWT:', error);
+                addMessage(`Erro: ${error.message}`, 'error');
+                updateStatus('disconnected', 'Falha na autenticação');
+            }
+        }
+
+        function connectWithToken() {
+            // if (!jwtToken) {
+            //     addMessage('Por favor, obtenha um token JWT primeiro.', 'error');
+            //     return;
+            // }
+
+            // if (socket && socket.connected) {
+            //     addMessage('Já conectado. Desconecte primeiro.', 'system');
+            //     return;
+            // }
+
+            updateStatus('authenticating', 'Conectando...');
+            addMessage('Iniciando conexão WebSocket autenticada...', 'system');
+
+            // Conectar com o token JWT
+            socket = io(WS_URL, {
+                auth: {
+                    token: jwtToken
+                }
+            });
+
+            socket.on('connect', () => {
+                updateStatus('connected', 'Conectado e Autenticado');
+                addMessage(`Conectado com sucesso! Socket ID: ${socket.id}`, 'system');
+
+                // Habilitar inputs
+                document.getElementById('promptInput').disabled = false;
+                document.getElementById('sendButton').disabled = false;
+            });
+
+            socket.on('disconnect', (reason) => {
+                updateStatus('disconnected', 'Desconectado');
+                addMessage(`Desconectado: ${reason}`, 'system');
+
+                // Desabilitar inputs
+                document.getElementById('promptInput').disabled = true;
+                // document.getElementById('sendButton').disabled = true;
+            });
+
+            socket.on('connect_error', (error) => {
+                updateStatus('disconnected', 'Erro de conexão');
+                addMessage(`Erro de conexão: ${error.message}`, 'error');
+
+                if (error.message.includes('Authentication')) {
+                    addMessage('Token JWT inválido ou expirado. Obtenha um novo token.', 'error');
+                }
+            });
+
+            socket.on('error', (error) => {
+                addMessage(`Erro: ${error.message || error}`, 'error');
+            });
+
+            socket.on('prompt-response', (data) => {
+                console.log('Resposta recebida:', data);
+
+                if (data.status === 'success') {
+                    const result = data.result;
+                    addMessage(
+                        `<strong>Resposta do servidor:</strong><br>
+                        ${result.message}<br>
+                        <small>User ID: ${result.userId}<br>
+                        Processado em: ${new Date(result.processedAt).toLocaleString('pt-BR')}</small>`,
+                        'received'
+                    );
+                } else {
+                    addMessage(`Erro no servidor: ${JSON.stringify(data.result)}`, 'error');
+                }
+            });
+        }
+
+        function disconnect() {
+            if (socket) {
+                socket.disconnect();
+                socket = null;
+                updateStatus('disconnected', 'Desconectado');
+                addMessage('Desconectado manualmente.', 'system');
+
+                // Desabilitar inputs
+                document.getElementById('promptInput').disabled = true;
+                // document.getElementById('sendButton').disabled = true;
+            } else {
+                addMessage('Não há conexão ativa.', 'system');
+            }
+        }
+
+        function sendPrompt() {
+            const input = document.getElementById('promptInput');
+            const prompt = input.value.trim();
+
+            if (!prompt) {
+                addMessage('Digite um prompt antes de enviar.', 'error');
+                return;
+            }
+
+            if (!socket || !socket.connected) {
+                addMessage('Não conectado. Conecte-se primeiro.', 'error');
+                return;
+            }
+
+            // Enviar prompt
+            socket.emit('send-prompt', { prompt });
+
+            // Mostrar mensagem enviada
+            addMessage(`<strong>Você:</strong> ${prompt}`, 'sent');
+
+            // Limpar input
+            input.value = '';
+        }
+
+        // Permitir enviar com Enter
+        document.getElementById('promptInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendPrompt();
+            }
+        });
+
+        // Exemplo de tokens para teste
+        console.log('%c⚠️ AMBIENTE DE TESTE', 'color: orange; font-size: 16px; font-weight: bold');
+        console.log('%cPara testar, você precisa de tokens SSO válidos do seu sistema.', 'color: #666');
+        console.log('%cSe estiver em desenvolvimento, você pode:', 'color: #666');
+        console.log('%c1. Usar tokens de teste configurados no seu ambiente', 'color: #666');
+        console.log('%c2. Fazer login no sistema real e capturar os tokens', 'color: #666');
+        console.log('%c3. Criar um endpoint de teste que gera tokens válidos', 'color: #666');
+    </script>
+</body>
+</html>

@@ -2,7 +2,7 @@ import logger from '@infra/logger/pinoLogger';
 import ISSOProvider, {
 	Session,
 	ValidateTokenParams,
-} from '@shared/integration/interfaces/ssoProvider';
+} from '@modules/identity/external/sso/interfaces/ssoProvider';
 import { ILeadLoversSSOProvider } from '@shared/providers/LeadloversSSO/interfaces/leadloversSSOProvider';
 
 export class LeadloversSSO implements ISSOProvider {
