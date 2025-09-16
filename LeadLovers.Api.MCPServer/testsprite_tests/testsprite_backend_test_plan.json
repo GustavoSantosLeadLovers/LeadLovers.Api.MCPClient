@@ -1,0 +1,22 @@
+[
+  {
+    "id": "TC001",
+    "title": "create_lead_api_should_validate_and_create_lead_successfully",
+    "description": "Test the /create_lead POST endpoint to ensure it validates input data against the schema and successfully creates a new lead with required and optional fields, returning a confirmation response."
+  },
+  {
+    "id": "TC002",
+    "title": "get_machines_api_should_return_paginated_machine_list",
+    "description": "Test the /get_machines GET endpoint to verify it returns a paginated list of machines with correct machine details including code, name, image, views, and leads count, supporting query parameters for pagination and filtering."
+  },
+  {
+    "id": "TC003",
+    "title": "get_machine_details_api_should_return_machine_information",
+    "description": "Test the /get_machine_details GET endpoint to ensure it retrieves detailed information for a specific machine identified by machineCode, returning machine attributes and statistics correctly."
+  },
+  {
+    "id": "TC004",
+    "title": "get_email_sequences_api_should_return_sequences_for_machine",
+    "description": "Test the /get_email_sequences GET endpoint to verify it returns a list of email sequences associated with a given machineCode, including sequence codes and names."
+  }
+]
