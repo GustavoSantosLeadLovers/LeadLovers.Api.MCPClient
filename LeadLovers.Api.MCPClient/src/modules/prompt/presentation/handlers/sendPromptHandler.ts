@@ -1,29 +1,35 @@
+import logger from '@infra/logger/pinoLogger';
+import { McpClientUsingOpenAIProvider } from '@shared/providers/MCPClient/implementations/mcpClientUsingOpenAIProvider';
 import {
 	sendPromptInput,
 	SendPromptInput,
 	SendPromptOutput,
 } from '../dtos/sendPromptDTO';
-import logger from '@infra/logger/pinoLogger';
 
 export class SendPromptHandler {
+	private readonly mcpClient = new McpClientUsingOpenAIProvider();
+
 	public async handle(data: SendPromptInput): Promise<SendPromptOutput> {
-		const input = sendPromptInput.safeParse(data);
-		if (!input.success) {
-			logger.error(
-				`Invalid prompt input: ${JSON.stringify(input.error.format())}`,
-			);
-			return { status: 'error', result: input.error.format() };
-		}
-
-		const { prompt, userId, userEmail, userName } = input.data;
-
-		logger.info(
-			`Processing prompt for user: ${userName} (${userEmail}, ID: ${userId})`,
-		);
-
 		try {
+			const input = sendPromptInput.safeParse(data);
+			if (!input.success) {
+				logger.error(
+					`Invalid prompt input: ${JSON.stringify(input.error.format())}`,
+				);
+				return { status: 'error', result: input.error.format() };
+			}
+
+			const { prompt, userId, userEmail, userName } = input.data;
+
+			logger.info(
+				`Processing prompt for user: ${userName} (${userEmail}, ID: ${userId})`,
+			);
+
+			await this.mcpClient.connectToServer('../server/build/index.js');
+			const message = await this.mcpClient.processQuery(prompt);
+
 			const result = {
-				message: 'Prompt received and processed successfully',
+				message,
 				promptLength: prompt.length,
 				userId: userId,
 				processedAt: new Date().toISOString(),
