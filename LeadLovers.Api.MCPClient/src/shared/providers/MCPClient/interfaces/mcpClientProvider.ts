@@ -1,10 +1,10 @@
-export type MCPClientResult<ResultType = unknown> = {
+export type MCPClientResult = {
 	status: 'success' | 'error';
-	result: string | ResultType;
+	result: unknown;
 };
 
 export interface IMCPClientProvider {
 	connectToServer(serverScriptPath: string): Promise<void>;
-	processQuery<Result>(query: string): Promise<MCPClientResult<Result>>;
+	processQuery(query: string): Promise<MCPClientResult>;
 	cleanup(): Promise<void>;
 }

@@ -3,8 +3,11 @@ import { Server as HttpServer } from 'node:http';
 import { Server } from 'socket.io';
 
 import { IdentityPublicAPI } from '@modules/identity/integration/identityPublicAPI';
+import { ProcessPromptService } from '@modules/prompt/application/processPromptService';
 import { SendPromptHandler } from '@modules/prompt/presentation/handlers/sendPromptHandler';
 import { variables } from '@shared/configs/variables';
+import { CacheKeys } from '@shared/enums/cacheKeys';
+import { McpClientUsingOpenAIProvider } from '@shared/providers/MCPClient/implementations/mcpClientUsingOpenAIProvider';
 import { RedisClient } from '@shared/providers/Redis/redisClient';
 import logger from '../logger/pinoLogger';
 import {
@@ -17,7 +20,7 @@ export class WebSocketServer {
 	private readonly port: number = variables.server.PORT || 3001;
 	private authMiddleware: AuthMiddleware;
 	private redisClient: RedisClient = RedisClient.getInstance();
-	private readonly CONNECTION_KEY_PREFIX = 'ws:user:connection:';
+	private readonly CONNECTION_KEY_PREFIX = CacheKeys.CONNECTION;
 
 	constructor(httpServer?: HttpServer) {
 		const corsOptions = this.getCorsOptions();
@@ -190,7 +193,10 @@ export class WebSocketServer {
 		logger.info(
 			`Received prompt from user ${user.email}: ${data.prompt} on socket ${socket.id}`,
 		);
-		const sendPromptHandler = new SendPromptHandler();
+
+		const mcpClient = new McpClientUsingOpenAIProvider();
+		const processPromptService = new ProcessPromptService(mcpClient);
+		const sendPromptHandler = new SendPromptHandler(processPromptService);
 		const response = await sendPromptHandler.handle({
 			prompt: data.prompt,
 			userId: user.id,

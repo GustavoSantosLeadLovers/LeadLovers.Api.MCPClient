@@ -67,9 +67,7 @@ export class McpClientUsingOpenAIProvider implements IMCPClientProvider {
 		}
 	}
 
-	public async processQuery<Result>(
-		query: string,
-	): Promise<MCPClientResult<Result>> {
+	public async processQuery(query: string): Promise<MCPClientResult> {
 		const messages: OpenAI.ChatCompletionMessageParam[] = [
 			{
 				role: 'user',
@@ -84,19 +82,19 @@ export class McpClientUsingOpenAIProvider implements IMCPClientProvider {
 		});
 		const { message } = response.choices[0];
 		if (message.content) {
-			logger.info(`[OpenAI response: ${message.content}]`);
+			logger.info(`[Model response: ${message.content}]`);
 			return { status: 'success', result: message.content };
 		}
-		const toolResult: MCPClientResult<Result> = {
-			status: 'success',
-			result: '',
+		const toolResult: MCPClientResult = {
+			status: 'error',
+			result: 'No tool result',
 		};
 		if (message.tool_calls) {
 			for (const toolCall of message.tool_calls as ChatCompletionMessageFunctionToolCall[]) {
 				const toolName = toolCall.function.name;
 				const toolArgs = JSON.parse(toolCall.function.arguments);
 				logger.info(
-					`[Calling tool: ${toolName} with args: ${JSON.stringify(toolArgs)}]`,
+					`Calling tool: ${toolName} with args: ${JSON.stringify(toolArgs)}`,
 				);
 				try {
 					const result = await this.mcp.callTool({
@@ -112,6 +110,7 @@ export class McpClientUsingOpenAIProvider implements IMCPClientProvider {
 							logger.info(
 								`Response from tool: ${toolName}: ${resultText}`,
 							);
+							toolResult.status = 'success';
 							toolResult.result = resultText;
 							return;
 						}
@@ -119,9 +118,10 @@ export class McpClientUsingOpenAIProvider implements IMCPClientProvider {
 							logger.info(
 								`Response from tool: ${toolName}: ${(c as ResourceContent).resource.text}`,
 							);
+							toolResult.status = 'success';
 							toolResult.result = JSON.parse(
 								(c as ResourceContent).resource.text,
-							) as Result;
+							);
 							return;
 						}
 					});
@@ -133,7 +133,6 @@ export class McpClientUsingOpenAIProvider implements IMCPClientProvider {
 								: String(error)
 						}`,
 					);
-					toolResult.status = 'error';
 					toolResult.result = `Error calling tool ${toolName}: ${
 						error instanceof Error ? error.message : String(error)
 					}`;
