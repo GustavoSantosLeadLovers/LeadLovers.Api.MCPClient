@@ -6,6 +6,7 @@ import {
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
 
+import { variables } from '@shared/configs/variables';
 import { IMCPClientProvider } from '../interfaces/mcpClientProvider';
 
 export class McpClientUsingAnthropicProvider implements IMCPClientProvider {
@@ -15,12 +16,14 @@ export class McpClientUsingAnthropicProvider implements IMCPClientProvider {
 	private tools: Tool[] = [];
 
 	constructor() {
-		const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
-		if (!ANTHROPIC_API_KEY) {
+		if (!variables.ai.ANTHROPIC_API_KEY) {
 			throw new Error('ANTHROPIC_API_KEY is not set');
 		}
+		if (!variables.ai.ANTHROPIC_MODEL) {
+			throw new Error('ANTHROPIC_MODEL is not set');
+		}
 		this.anthropic = new Anthropic({
-			apiKey: ANTHROPIC_API_KEY,
+			apiKey: variables.ai.ANTHROPIC_API_KEY,
 		});
 		this.mcp = new Client({ name: 'mcp-client-cli', version: '1.0.0' });
 	}
@@ -59,7 +62,7 @@ export class McpClientUsingAnthropicProvider implements IMCPClientProvider {
 			},
 		];
 		const response = await this.anthropic.messages.create({
-			model: 'claude-3-7-sonnet-20250219',
+			model: variables.ai.ANTHROPIC_MODEL,
 			max_tokens: 1000,
 			messages,
 			tools: this.tools,

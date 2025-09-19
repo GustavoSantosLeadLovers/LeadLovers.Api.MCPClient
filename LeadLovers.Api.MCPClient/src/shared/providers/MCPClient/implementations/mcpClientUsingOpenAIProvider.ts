@@ -6,7 +6,16 @@ import {
 	ChatCompletionMessageFunctionToolCall,
 } from 'openai/resources/index';
 
-import { IMCPClientProvider } from '../interfaces/mcpClientProvider';
+import logger from '@infra/logger/pinoLogger';
+import { variables } from '@shared/configs/variables';
+import {
+	ResourceContent,
+	TextContent,
+} from '../../../../../../LeadLovers.Api.MCPServer/src/shared/types/contentResponse';
+import {
+	IMCPClientProvider,
+	MCPClientResult,
+} from '../interfaces/mcpClientProvider';
 
 export class McpClientUsingOpenAIProvider implements IMCPClientProvider {
 	private mcp: Client;
@@ -15,17 +24,19 @@ export class McpClientUsingOpenAIProvider implements IMCPClientProvider {
 	private tools: ChatCompletionFunctionTool[] = [];
 
 	constructor() {
-		const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-		if (!OPENAI_API_KEY) {
+		if (!variables.ai.OPENAI_API_KEY) {
 			throw new Error('OPENAI_API_KEY is not set');
 		}
+		if (!variables.ai.OPENAI_MODEL) {
+			throw new Error('OPENAI_MODEL is not set');
+		}
 		this.openai = new OpenAI({
-			apiKey: OPENAI_API_KEY,
+			apiKey: variables.ai.OPENAI_API_KEY,
 		});
 		this.mcp = new Client({ name: 'mcp-client-cli', version: '1.0.0' });
 	}
 
-	async connectToServer(serverScriptPath: string) {
+	public async connectToServer(serverScriptPath: string): Promise<void> {
 		try {
 			const command = process.execPath;
 			this.transport = new StdioClientTransport({
@@ -47,17 +58,18 @@ export class McpClientUsingOpenAIProvider implements IMCPClientProvider {
 					},
 				};
 			});
-			console.log(
-				'Connected to server with tools:',
-				this.tools.map(t => t.function.name),
+			logger.info(
+				`Connected to server with tools: ${this.tools.map(t => t.function.name)}`,
 			);
 		} catch (e) {
-			console.log('Failed to connect to MCP server: ', e);
+			logger.error(`Failed to connect to MCP server: ${e}`);
 			throw e;
 		}
 	}
 
-	async processQuery(query: string) {
+	public async processQuery<Result>(
+		query: string,
+	): Promise<MCPClientResult<Result>> {
 		const messages: OpenAI.ChatCompletionMessageParam[] = [
 			{
 				role: 'user',
@@ -65,58 +77,83 @@ export class McpClientUsingOpenAIProvider implements IMCPClientProvider {
 			},
 		];
 		const response = await this.openai.chat.completions.create({
-			model: 'gpt-4o-mini',
+			model: variables.ai.OPENAI_MODEL,
 			messages,
 			tools: this.tools,
 			tool_choice: 'auto',
 		});
-		const finalText = [];
-		const message = response.choices[0].message;
+		const { message } = response.choices[0];
 		if (message.content) {
-			finalText.push(message.content);
+			logger.info(`[OpenAI response: ${message.content}]`);
+			return { status: 'success', result: message.content };
 		}
+		const toolResult: MCPClientResult<Result> = {
+			status: 'success',
+			result: '',
+		};
 		if (message.tool_calls) {
 			for (const toolCall of message.tool_calls as ChatCompletionMessageFunctionToolCall[]) {
 				const toolName = toolCall.function.name;
 				const toolArgs = JSON.parse(toolCall.function.arguments);
-				finalText.push(
-					`[Calling tool ${toolName} with args ${JSON.stringify(toolArgs)}]`,
+				logger.info(
+					`[Calling tool: ${toolName} with args: ${JSON.stringify(toolArgs)}]`,
 				);
 				try {
 					const result = await this.mcp.callTool({
 						name: toolName,
 						arguments: toolArgs,
 					});
-					const resultContent =
-						(result.content as Array<{
-							type: string;
-							text?: string;
-						}>) || [];
-					const resultText = resultContent
-						.filter(c => c.type === 'text' && c.text)
-						.map(c => c.text)
-						.join('\n');
-					console.info(
-						`Response from tool ${toolName}: ${resultText}`,
-					);
-					finalText.push(
-						`Response from tool ${toolName}: ${resultText}`,
-					);
+					const resultContent = result.content as
+						| TextContent[]
+						| ResourceContent[];
+					resultContent.map(c => {
+						if (this.isTextResponse(c)) {
+							const resultText = (c as TextContent).text;
+							logger.info(
+								`Response from tool: ${toolName}: ${resultText}`,
+							);
+							toolResult.result = resultText;
+							return;
+						}
+						if (this.isResourceResponse(c)) {
+							logger.info(
+								`Response from tool: ${toolName}: ${(c as ResourceContent).resource.text}`,
+							);
+							toolResult.result = JSON.parse(
+								(c as ResourceContent).resource.text,
+							) as Result;
+							return;
+						}
+					});
 				} catch (error) {
-					finalText.push(
+					logger.error(
 						`Error calling tool ${toolName}: ${
 							error instanceof Error
 								? error.message
 								: String(error)
 						}`,
 					);
+					toolResult.status = 'error';
+					toolResult.result = `Error calling tool ${toolName}: ${
+						error instanceof Error ? error.message : String(error)
+					}`;
 				}
 			}
 		}
-		return finalText;
+		return toolResult;
 	}
 
-	async cleanup() {
+	public async cleanup(): Promise<void> {
 		await this.mcp.close();
+	}
+
+	private isTextResponse(content: TextContent | ResourceContent): boolean {
+		return content?.type === 'text' && 'text' in content;
+	}
+
+	private isResourceResponse(
+		content: TextContent | ResourceContent,
+	): boolean {
+		return content?.type === 'resource' && 'resource' in content;
 	}
 }

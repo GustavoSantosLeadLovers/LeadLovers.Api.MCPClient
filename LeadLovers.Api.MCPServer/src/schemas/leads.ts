@@ -1,4 +1,4 @@
-import { email, z } from 'zod';
+import { z } from 'zod';
 
 export const getLeadsSchema = z.object({
   page: z.number().min(0),
@@ -8,7 +8,7 @@ export const getLeadsSchema = z.object({
 
 export const createLeadSchema = z.object({
   Name: z.string().min(2).max(100),
-  Email: z.email().max(100),
+  Email: z.string().email().max(100),
   MachineCode: z.number().min(0),
   EmailSequenceCode: z.number().min(0),
   SequenceLevelCode: z.number().min(0),
@@ -50,7 +50,7 @@ export const createLeadSchema = z.object({
 
 export const updateLeadSchema = createLeadSchema
   .extend({
-    Email: z.email().max(100),
+    Email: z.string().email().max(100),
   })
   .extend({
     MachineCode: z.number().max(100).optional(),
