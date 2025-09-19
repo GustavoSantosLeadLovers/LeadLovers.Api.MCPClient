@@ -53,6 +53,7 @@ export const updateLeadSchema = createLeadSchema
     Email: z.string().email().max(100),
   })
   .extend({
+    Name: z.string().min(2).max(100).optional(),
     MachineCode: z.number().max(100).optional(),
     EmailSequenceCode: z.number().min(0).optional(),
     SequenceLevelCode: z.number().min(0).optional(),
