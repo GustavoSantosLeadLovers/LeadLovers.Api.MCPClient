@@ -29,15 +29,8 @@ export const createLeadInputShape = {
 export const createLeadOutputShape = {
   success: z.boolean().describe('Indica se a criação do lead foi bem-sucedida'),
   action: z.string().describe('Ação realizada, ex: "create"'),
-  details: z.object({
-    description: z.string().describe('Descrição da ação realizada'),
-  }),
-  contextInfo: z.array(
-    z.object({
-      items: z.string().describe('Informações contextuais adicionais'),
-      description: z.string().describe('Descrição da informação contextual'),
-    })
-  ),
+  details: z.record(z.any()).describe('Detalhes adicionais sobre o lead criado'),
+  contextInfo: z.array(z.string()).describe('Informações contextuais adicionais'),
 };
 
 export const createLeadToolInput = z.object(createLeadInputShape);

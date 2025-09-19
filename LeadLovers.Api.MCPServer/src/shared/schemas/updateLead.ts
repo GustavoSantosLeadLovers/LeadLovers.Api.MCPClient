@@ -33,8 +33,17 @@ export const updateLeadInputShape = {
 };
 
 export const updateLeadOutputShape = {
-  Success: z.boolean().describe('Indica se a atualização foi bem-sucedida'),
-  Message: z.string().describe('Mensagem de retorno da operação'),
+  Id: z.number().describe('ID do lead atualizado'),
+  Code: z.number().describe('Código do lead atualizado'),
+  Email: z.string().email().describe('E-mail do lead atualizado'),
+  Name: z.string().describe('Nome do lead atualizado'),
+  Phone: z.string().nullable().describe('Telefone do lead atualizado'),
+  Birthday: z.string().nullable().describe('Data de nascimento do lead atualizado'),
+  Photo: z.string().nullable().describe('URL da foto do lead atualizado'),
+  City: z.string().nullable().describe('Cidade do lead atualizado'),
+  State: z.string().nullable().describe('Estado do lead atualizado'),
+  Company: z.string().nullable().describe('Empresa do lead atualizado'),
+  Gender: z.string().nullable().describe('Gênero do lead atualizado'),
 };
 
 export const updateLeadToolInput = z.object(updateLeadInputShape);
