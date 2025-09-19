@@ -1,3 +1,5 @@
+import logger from '@infra/logger/pinoLogger';
+
 export class GetConversationPromptsService {
 	constructor() {}
 
@@ -6,6 +8,9 @@ export class GetConversationPromptsService {
 		conversationId: string,
 	): Promise<string> {
 		// Simulate fetching prompts from a database or external service
-		return `Prompts for user ${userId} in conversation ${conversationId}`;
+		logger.info(
+			`Fetched prompts for user ID: ${userId} in conversation ID: ${conversationId}`,
+		);
+		return '';
 	}
 }

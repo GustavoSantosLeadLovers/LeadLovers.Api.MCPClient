@@ -1,5 +1,9 @@
 import logger from '@infra/logger/pinoLogger';
+import { GetConversationIdService } from '@modules/prompt/application/getConversationIdService';
+import { GetConversationPromptsService } from '@modules/prompt/application/getConversationPromptsService';
 import { ProcessPromptService } from '@modules/prompt/application/processPromptService';
+import { SetConversationIdService } from '@modules/prompt/application/setConversationIdService';
+import { SetConversationPromptsService } from '@modules/prompt/application/setConversationPromptsService';
 import {
 	sendPromptInput,
 	SendPromptInput,
@@ -7,7 +11,15 @@ import {
 } from '../dtos/sendPromptDTO';
 
 export class SendPromptHandler {
-	constructor(private readonly processPromptService: ProcessPromptService) {}
+	constructor(
+		private readonly services: {
+			getConversationId: GetConversationIdService;
+			getConversationPrompts: GetConversationPromptsService;
+			processPrompt: ProcessPromptService;
+			setConversationId: SetConversationIdService;
+			setConversationPrompts: SetConversationPromptsService;
+		},
+	) {}
 
 	public async handle(data: SendPromptInput): Promise<SendPromptOutput> {
 		try {
@@ -22,13 +34,29 @@ export class SendPromptHandler {
 			logger.info(
 				`Processing prompt for user: ${userName} (${userEmail}, ID: ${userId})`,
 			);
-			const response = await this.processPromptService.execute(prompt);
+			let conversationId =
+				await this.services.getConversationId.execute(userId);
+			if (!conversationId) {
+				conversationId =
+					await this.services.setConversationId.execute(userId);
+			}
+			let prompts = await this.services.getConversationPrompts.execute(
+				userId,
+				conversationId,
+			);
+			prompts += `\n ${prompt}`;
+			const response = await this.services.processPrompt.execute(prompts);
+			await this.services.setConversationPrompts.execute(
+				userId,
+				conversationId,
+				prompts,
+			);
 			if (response.status === 'error') return response;
 			return {
 				status: 'success',
 				result: {
 					message: response.result,
-					promptLength: prompt.length,
+					promptLength: prompts.length,
 					userId: userId,
 					processedAt: new Date().toISOString(),
 				},

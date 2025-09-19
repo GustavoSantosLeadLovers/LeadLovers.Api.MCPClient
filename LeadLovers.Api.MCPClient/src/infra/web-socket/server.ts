@@ -3,11 +3,10 @@ import { Server as HttpServer } from 'node:http';
 import { Server } from 'socket.io';
 
 import { IdentityPublicAPI } from '@modules/identity/integration/identityPublicAPI';
-import { ProcessPromptService } from '@modules/prompt/application/processPromptService';
 import { SendPromptHandler } from '@modules/prompt/presentation/handlers/sendPromptHandler';
+import { SendPromptsServiceFactoryUsingOpenAI } from '@modules/prompt/utils/factories/implementations/sendPromptServicesFactory';
 import { variables } from '@shared/configs/variables';
 import { CacheKeys } from '@shared/enums/cacheKeys';
-import { McpClientUsingOpenAIProvider } from '@shared/providers/MCPClient/implementations/mcpClientUsingOpenAIProvider';
 import { RedisClient } from '@shared/providers/Redis/redisClient';
 import logger from '../logger/pinoLogger';
 import {
@@ -194,9 +193,19 @@ export class WebSocketServer {
 			`Received prompt from user ${user.email}: ${data.prompt} on socket ${socket.id}`,
 		);
 
-		const mcpClient = new McpClientUsingOpenAIProvider();
-		const processPromptService = new ProcessPromptService(mcpClient);
-		const sendPromptHandler = new SendPromptHandler(processPromptService);
+		const sendPromptsServiceFactory =
+			new SendPromptsServiceFactoryUsingOpenAI();
+		const sendPromptHandler = new SendPromptHandler({
+			getConversationId:
+				sendPromptsServiceFactory.createGetConversationId(),
+			getConversationPrompts:
+				sendPromptsServiceFactory.createGetConversationPrompts(),
+			processPrompt: sendPromptsServiceFactory.createProcessPrompt(),
+			setConversationId:
+				sendPromptsServiceFactory.createSetConversationId(),
+			setConversationPrompts:
+				sendPromptsServiceFactory.createSetConversationPrompts(),
+		});
 		const response = await sendPromptHandler.handle({
 			prompt: data.prompt,
 			userId: user.id,

@@ -11,10 +11,13 @@ export class SetConversationIdService {
 	public async execute(userId: string): Promise<string> {
 		try {
 			await this.redisClient.connect();
-			logger.info('Redis connected for GetConversationId service');
+			logger.info('Redis connected for SetConversationId service');
 			const key = `${this.CONVERSATION_KEY_PREFIX}${userId}`;
 			const conversationId = cuid();
 			await this.redisClient.set(key, conversationId);
+			logger.info(
+				`New conversation ID created: ${conversationId} for user ID: ${userId}`,
+			);
 			return conversationId;
 		} catch (error) {
 			logger.error(`Failed to connect to Redis: ${error}`);
