@@ -1,8 +1,8 @@
 import { UpdateLeadInput, updateLeadSchema } from 'schemas/leads';
 import { LeadLoversAPIService } from 'services/leadlovers-api';
 import { MCPToolResult, McpToolSchema } from 'types/mcp';
-import { MessageFormatter } from '../../utils/message-formatter';
 import { ZodError } from 'zod';
+import { MessageFormatter } from '../../utils/message-formatter';
 
 export const updateLeadTool: McpToolSchema = {
   name: 'update_lead',

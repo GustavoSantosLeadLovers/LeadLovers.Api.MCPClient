@@ -29,30 +29,30 @@ export const getLeadsTool: McpToolSchema = {
     },
     required: ['page'],
   },
-  outputSchema: {
-    type: 'object',
-    properties: {
-      Data: {
-        type: 'array',
-        Email: { type: 'string' },
-        Name: { type: 'string' },
-        Company: { type: 'string' },
-        Phone: { type: 'string' },
-        Photo: { type: 'string' },
-        City: { type: 'string' },
-        State: { type: 'string' },
-        Birthday: { type: 'string' },
-        Gender: { type: 'string' },
-        Score: { type: 'number' },
-        RegistrationDate: { type: 'string' },
-      },
-      Links: {
-        Self: { type: 'string', description: 'Link para a página atual' },
-        Next: { type: 'string', description: 'Link para a próxima página' },
-        Prev: { type: 'string', description: 'Link para a página anterior' },
-      },
-    },
-  },
+  // outputSchema: {
+  //   type: 'object',
+  //   properties: {
+  //     Data: {
+  //       type: 'array',
+  //       Email: { type: 'string' },
+  //       Name: { type: 'string' },
+  //       Company: { type: 'string' },
+  //       Phone: { type: 'string' },
+  //       Photo: { type: 'string' },
+  //       City: { type: 'string' },
+  //       State: { type: 'string' },
+  //       Birthday: { type: 'string' },
+  //       Gender: { type: 'string' },
+  //       Score: { type: 'number' },
+  //       RegistrationDate: { type: 'string' },
+  //     },
+  //     Links: {
+  //       Self: { type: 'string', description: 'Link para a página atual' },
+  //       Next: { type: 'string', description: 'Link para a próxima página' },
+  //       Prev: { type: 'string', description: 'Link para a página anterior' },
+  //     },
+  //   },
+  // },
 };
 
 export async function executeGetLeads(

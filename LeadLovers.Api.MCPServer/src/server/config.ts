@@ -5,11 +5,11 @@ dotenv.config();
 
 const configSchema = z.object({
   // LeadLovers API
-  LEADLOVERS_API_URL: z.url().default('https://llapi.leadlovers.com/webapi'),
+  LEADLOVERS_API_URL: z.string().url().default('https://llapi.leadlovers.com/webapi'),
   LEADLOVERS_API_TOKEN: z.string().min(1, 'LeadLovers API token is required'),
 
   // SSO Authentication
-  SSO_API_URL: z.url().default('https://globalnotifications-api.leadlovers.com'),
+  SSO_API_URL: z.string().url().default('https://globalnotifications-api.leadlovers.com'),
   SSO_TOKEN: z.string().optional(),
   SSO_REFRESH_TOKEN: z.string().optional(),
   SSO_USER_TOKEN: z.string().optional(),
