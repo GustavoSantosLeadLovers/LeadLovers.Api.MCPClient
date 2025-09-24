@@ -1,5 +1,3 @@
-import 'dotenv/config';
-
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 
@@ -22,7 +20,7 @@ const server = new McpServer(
 registerTools(server);
 
 // Start server
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   try {
     const transport = new StdioServerTransport();
     await server.connect(transport);
@@ -43,6 +41,3 @@ process.on('uncaughtException', error => {
   process.stderr.write(`[MCP Server] Uncaught Exception: ${error}\n`);
   process.exit(1);
 });
-
-// Start the server
-main().catch(error => process.stderr.write(`Main error: ${error}\n`));
