@@ -30,6 +30,9 @@
       "server/*": [
         "src/server/*"
       ],
+      "modules/*": [
+        "src/modules/*"
+      ],
       "tools/*": [
         "src/tools/*"
       ],
