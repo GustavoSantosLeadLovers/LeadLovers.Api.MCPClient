@@ -1,14 +1,20 @@
 import { Router } from 'express';
 
+import { AuthenticateBeeFreeService } from '@modules/identity/application/authenticateBeeFreeService';
 import { CreateSessionPayloadService } from '@modules/identity/application/createSessionPayloadService';
 import { ValidateSSOTokenService } from '@modules/identity/application/validateSSOTokenService';
 import { LeadloversSSO } from '@modules/identity/external/sso/implementations/leadloversSSO';
+import { CreateBeeFreeSessionHandler } from '@modules/identity/presentation/handlers/createBeeFreeSessionHandler';
 import { CreateSessionHandler } from '@modules/identity/presentation/handlers/createSessionHandler';
 import { LeadLoversSSOProvider } from '@shared/providers/LeadloversSSO/implementations/leadloversSSOProvider';
 
 const createSessionHandler = new CreateSessionHandler(
 	new ValidateSSOTokenService(new LeadloversSSO(new LeadLoversSSOProvider())),
 	new CreateSessionPayloadService(),
+);
+
+const createBeeFreeSessionHandler = new CreateBeeFreeSessionHandler(
+	new AuthenticateBeeFreeService(),
 );
 
 /**
@@ -109,5 +115,10 @@ export const session = (router: Router): void => {
 	router.post(
 		'/sessions',
 		createSessionHandler.handle.bind(createSessionHandler),
+	);
+
+	router.post(
+		'/sessions/bee-free',
+		createBeeFreeSessionHandler.handle.bind(createBeeFreeSessionHandler),
 	);
 };

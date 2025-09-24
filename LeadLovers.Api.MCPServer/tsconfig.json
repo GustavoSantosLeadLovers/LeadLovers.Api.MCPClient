@@ -24,26 +24,17 @@
     "noUnusedParameters": true,
     "outDir": "./dist",
     "paths": {
-      "types/*": [
-        "src/types/*"
+      "infra/*": [
+        "src/infra/*"
       ],
-      "server/*": [
-        "src/server/*"
-      ],
-      "tools/*": [
-        "src/tools/*"
-      ],
-      "config/*": [
-        "src/server/config/*"
-      ],
-      "services/*": [
-        "src/services/*"
-      ],
-      "schemas/*": [
-        "src/schemas/*"
+      "modules/*": [
+        "src/modules/*"
       ],
       "shared/*": [
         "src/shared/*"
+      ],
+      "tools/*": [
+        "src/tools/*"
       ],
     },
     "removeComments": true,

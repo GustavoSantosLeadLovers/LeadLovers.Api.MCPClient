@@ -51,16 +51,7 @@ export class SendPromptHandler {
 				conversationId,
 				prompts,
 			);
-			if (response.status === 'error') return response;
-			return {
-				status: 'success',
-				result: {
-					message: response.result,
-					promptLength: prompts.length,
-					userId: userId,
-					processedAt: new Date().toISOString(),
-				},
-			};
+			return response;
 		} catch (error) {
 			logger.error(`Error processing prompt: ${error}`);
 			return {
