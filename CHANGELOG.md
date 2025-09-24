@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v2.1.0] - 2025-09-24
+
+### Changes
+
+#### Features
+- feat: add bee free authenticate endpoint (cfcee8e)
+- Merge pull request #11 from GustavoSantosLeadLovers/feat/add-mcp-client (c2225bd)
+- feat: expand MCP server with complete CRUD operations and email sequences (35d7129)
+- feat: add OpenAI dependency and simplify prompt handler response (29a5998)
+- feat: implement service layer architecture and improve MCP client handling (81830cb)
+- feat: enhance MCP integration with improved configurations and service structure (6bc09b1)
+- feat: adicionar integração com MCP Client usando OpenAI (89815a8)
+
+
+
+All notable changes to this project will be documented in this file.
+
 ## [v2.0.1] - 2025-09-16
 
 ### Changes
