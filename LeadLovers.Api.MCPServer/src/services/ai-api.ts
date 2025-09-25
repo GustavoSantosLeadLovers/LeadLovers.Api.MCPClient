@@ -25,11 +25,11 @@ export class AIService {
       } else if (selectedProvider === 'anthropic' && this.anthropic) {
         return await this.generateWithAnthropic(prompt);
       } else {
-        console.log('No AI API keys configured, using mock response');
+        process.stderr.write('[AI Service] No AI API keys configured, using mock response\n');
         return prompt;
       }
     } catch (error) {
-      console.error(`Error with ${selectedProvider}:`, error);
+      process.stderr.write(`[AI Service] Error with ${selectedProvider}: ${error}\n`);
       return prompt;
     }
   }

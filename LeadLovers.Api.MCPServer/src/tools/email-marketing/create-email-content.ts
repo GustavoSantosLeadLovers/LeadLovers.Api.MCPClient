@@ -11,13 +11,13 @@ export const createEmailContentTool: McpToolSchema = {
   inputSchema: {
     type: 'object',
     properties: {
-      Prompt: {
+      prompt: {
         type: 'string',
         description: 'Informações sobre o conteúdo do e-mail que deseja criar (obrigatório)',
         minLength: 50
       }
     },
-    required: ['Prompt'],
+    required: ['prompt'],
   },
   outputSchema: {
     type: 'object',
@@ -58,7 +58,7 @@ export async function executecreateEmailContent(
   return MessageFormatter.formatSuccess({
     action: `Conteúdo de e-mail criado com sucesso!`,
     details: {
-      fullJson
+      fullJson: JSON.stringify(fullJson)
     }
   });
 }

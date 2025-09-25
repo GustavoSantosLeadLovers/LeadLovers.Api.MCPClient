@@ -48,6 +48,8 @@ class LeadLoversMCPServer {
     );
 
     this.apiService = new LeadLoversAPIService();
+    this.aiService = new AIService();
+    this.beeFreeService = new BeeFreeAPIService();
     this.setupHandlers();
   }
 
