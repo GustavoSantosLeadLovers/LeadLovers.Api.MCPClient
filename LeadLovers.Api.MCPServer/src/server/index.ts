@@ -8,6 +8,8 @@ import {
 } from '@modelcontextprotocol/sdk/types.js';
 
 import { LeadLoversAPIService } from '../services/leadlovers-api';
+import { BeeFreeAPIService } from 'services/beefree-api';
+import { AIService } from 'services/ai-api';
 import { appConfig } from './config';
 
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
@@ -18,6 +20,7 @@ import {
 import { deleteLeadTool, executeDeleteLead } from 'tools/leads/delete-lead';
 import { executeGetLeads, getLeadsTool } from 'tools/leads/get-leads';
 import { executeUpdateLead, updateLeadTool } from 'tools/leads/update-lead';
+import { executecreateEmailContent, createEmailContentTool } from 'tools/email-marketing/create-email-content';
 import {
   executeGetMachineDetails,
   getMachineDetailsTool,
@@ -28,6 +31,8 @@ import { createLeadTool, executeCreateLead } from '../tools/leads/create-lead';
 class LeadLoversMCPServer {
   private server: Server;
   private apiService: LeadLoversAPIService;
+  private aiService: AIService;
+  private beeFreeService: BeeFreeAPIService;
 
   constructor() {
     this.server = new Server(
@@ -51,6 +56,7 @@ class LeadLoversMCPServer {
     this.server.setRequestHandler(ListToolsRequestSchema, async () => {
       return {
         tools: [
+          createEmailContentTool,
           createLeadTool,
           getMachinesTool,
           getEmailSequencesTool,
@@ -74,6 +80,12 @@ class LeadLoversMCPServer {
 
         const operation = (async (): Promise<CallToolResult> => {
           switch (name) {
+            case createEmailContentTool.name:
+              const emailContentResult = await executecreateEmailContent(args, this.aiService, this.beeFreeService);
+              return {
+                content: emailContentResult.content,
+                isError: emailContentResult.isError,
+              };
             case getLeadsTool.name:
               const getLeadsResult = await executeGetLeads(args, this.apiService);
               return {
