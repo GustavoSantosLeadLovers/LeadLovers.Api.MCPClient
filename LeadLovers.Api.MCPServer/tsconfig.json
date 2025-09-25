@@ -13,7 +13,9 @@
     "strictPropertyInitialization": false,
     "forceConsistentCasingInFileNames": true,
     "incremental": true,
-    "lib": ["es2020"],
+    "lib": [
+      "es2020"
+    ],
     "module": "es2022",
     "moduleResolution": "node",
     "noFallthroughCasesInSwitch": true,
@@ -22,12 +24,18 @@
     "noUnusedParameters": true,
     "outDir": "./dist",
     "paths": {
-      "types/*": ["src/types/*"],
-      "server/*": ["src/server/*"],
-      "tools/*": ["src/tools/*"],
-      "config/*": ["src/server/config/*"],
-      "services/*": ["src/services/*"],
-      "schemas/*": ["src/schemas/*"]
+      "infra/*": [
+        "src/infra/*"
+      ],
+      "modules/*": [
+        "src/modules/*"
+      ],
+      "shared/*": [
+        "src/shared/*"
+      ],
+      "tools/*": [
+        "src/tools/*"
+      ],
     },
     "removeComments": true,
     "resolveJsonModule": true,
@@ -43,5 +51,7 @@
     "resolveFullPaths": true,
     "verbose": false
   },
-  "include": ["src/**/*"]
+  "include": [
+    "src/**/*"
+  ]
 }
