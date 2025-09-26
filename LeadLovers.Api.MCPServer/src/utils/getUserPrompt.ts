@@ -1,7 +1,9 @@
 export function getUserPrompt(prompt: string): string {
-    return `Crie um email profissional baseado neste prompt:
+  return `
+        Crie um email profissional baseado neste prompt:
 
-    "${prompt}"
+        "${prompt}"
 
-    Lembre-se de retornar apenas o JSON válido com title, body, cta e footer.`;
+        Lembre-se de retornar apenas o JSON válido com title, body, cta e footer.
+    `;
 }
