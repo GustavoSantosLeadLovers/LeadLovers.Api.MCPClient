@@ -26,6 +26,7 @@ Este monorepo contém a solução completa para integração do LeadLovers CRM c
 - **📊 Gestão de Leads**: CRUD completo e operações em lote
 - **🚀 Automação**: Processos inteligentes de scoring e segmentação
 - **📈 Analytics**: Métricas e insights em tempo real
+- **📧 Email Marketing**: Geração de conteúdo de email com IA usando Anthropic e BeeFree
 
 ## 🏗️ Arquitetura
 
@@ -49,9 +50,16 @@ LeadLovers.Api.MCPClient/
     │   ├── tools/                # Ferramentas MCP
     │   │   ├── leads/            # Gestão de leads
     │   │   ├── machines/         # Gestão de máquinas/funis
-    │   │   └── email-sequence/   # Sequências de email
-    │   ├── services/             # Integrações externas
-    │   └── schemas/              # Validação com Zod
+    │   │   ├── email-sequence/   # Sequências de email
+    │   │   └── emailMarketing.ts # Geração de conteúdo de email
+    │   ├── modules/              # Módulos de domínio
+    │   │   └── emailMarketing/   # Módulo de email marketing
+    │   ├── shared/               # Recursos compartilhados
+    │   │   ├── configs/          # Configurações e variáveis
+    │   │   └── providers/        # Provedores de serviços
+    │   │       ├── AIAPI/        # Integração com Anthropic
+    │   │       └── BuilderProvider/ # Integração com BeeFree
+    │   └── utils/                # Utilitários e helpers
     └── dist/                     # Build de produção
 ```
 
@@ -211,6 +219,16 @@ socket.on('prompt-response', (response) => {
   "arguments": {
     "page": 1,
     "itemsPerPage": 20
+  }
+}
+```
+
+#### Criar Conteúdo de Email
+```javascript
+{
+  "tool": "create_email_content",
+  "arguments": {
+    "prompt": "Crie um email de boas-vindas para novos assinantes de um curso de marketing digital, destacando os benefícios e próximos passos"
   }
 }
 ```
