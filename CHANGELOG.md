@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v2.2.1] - 2025-09-26
+
+### Changes
+
+#### Bug Fixes
+- fix: melhoria na validação e limpeza de respostas JSON da API Anthropic (9625cd5)
+
+
+
+All notable changes to this project will be documented in this file.
+
 ## [v2.2.0] - 2025-09-26
 
 ### Changes
