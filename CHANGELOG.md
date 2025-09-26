@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v2.2.0] - 2025-09-26
+
+### Changes
+
+#### Features
+- Merge pull request #13 from GustavoSantosLeadLovers/feature/email-marketing (3295356)
+
+
+
+All notable changes to this project will be documented in this file.
+
 ## [Unreleased]
 
 ### Added
