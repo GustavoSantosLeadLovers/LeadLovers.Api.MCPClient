@@ -28,7 +28,7 @@ export class GetMachinesHandler {
         data: null,
       };
     }
-    const output = getMachinesToolOutput.safeParse(result);
+    const output = getMachinesToolOutput.safeParse(result.data);
     if (!output.success) {
       process.stderr.write(`[MCP Server] Tool: get_machines - Error: ${output.error.message}\n`);
       return {
