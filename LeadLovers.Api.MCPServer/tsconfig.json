@@ -36,6 +36,9 @@
       "tools/*": [
         "src/tools/*"
       ],
+      "utils/*": [
+        "src/utils/*"
+      ],
     },
     "removeComments": true,
     "resolveJsonModule": true,

@@ -1,36 +1,23 @@
-export class BeeFreeAPIService {
-    private baseUrl: string;
-    private token: string;
+import axios, { AxiosInstance } from "axios";
+import { IEmailBuilderProvider } from "../interfaces/emailBuilderProvider";
+import { variables } from "shared/configs/variables";
+
+export class BeeFreeEmailBuilderProvider implements IEmailBuilderProvider {
+    private instance: AxiosInstance;
 
     constructor() {
-        this.baseUrl = process.env.BEEFREE_API_URL || 'https://api.getbee.io/v1/';
-        this.token = process.env.BEEFREE_API_TOKEN || '';
-    }
-
-    async convertSimpleToFull(simpleSchema: any): Promise<any> {
-        if (!this.token) throw new Error('BeeFree API token is not configured.');
-        
-        const response = await fetch(`${this.baseUrl}conversion/simple-to-full-json`, {
-            method: 'POST',
+        this.instance = axios.create({
+            baseURL: variables.beefree.API_URL,
+            timeout: 30000,
             headers: {
-                'Authorization': `Bearer ${this.token}`,
+                'Authorization': `Bearer ${variables.beefree.API_TOKEN}`,
                 'Content-Type': 'application/json',
-                'Accept': 'application/json'
+                'User-Agent': `leadlovers-mcp/${variables.mcp.SERVER_VERSION}`,
             },
-            body: JSON.stringify(simpleSchema)
         });
-        
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error(`BeeFree API error (${response.status}):`, errorText);
-        }
-
-        const fullJsonResponse = await response.json();
-        
-        return fullJsonResponse;
     }
 
-    convertToSimpleSchema(aiResponse: any): any {
+    aiContentToSimpleSchema(aiContent: any): any {
         return {
             template: {
                 type: "email",
@@ -43,7 +30,7 @@ export class BeeFreeAPIService {
                         modules: [
                         {
                             type: "title",
-                            text: aiResponse.title,
+                            text: aiContent.title,
                             title: "h1",
                             size: 24,
                             bold: true,
@@ -64,7 +51,7 @@ export class BeeFreeAPIService {
                         modules: [
                         {
                             type: "paragraph",
-                            text: aiResponse.body.replace(/\n\n/g, '<br><br>'),
+                            text: aiContent.body.replace(/\n\n/g, '<br><br>'),
                             size: 16,
                             "line-height": 1.6,
                             color: "#333333",
@@ -85,7 +72,7 @@ export class BeeFreeAPIService {
                         modules: [
                         {
                             type: "button",
-                            text: aiResponse.cta,
+                            text: aiContent.cta,
                             href: "https://example.com",
                             "background-color": "#007BFF",
                             color: "#FFFFFF",
@@ -108,7 +95,7 @@ export class BeeFreeAPIService {
                         modules: [
                         {
                             type: "paragraph",
-                            text: aiResponse.footer,
+                            text: aiContent.footer,
                             size: 12,
                             color: "#666666",
                             align: "center",
@@ -122,5 +109,13 @@ export class BeeFreeAPIService {
                 ]
             }
         };
+    }
+
+    async simpleToFullJson(simpleSchema: any): Promise<string> {
+        const response = await this.instance.post('conversion/simple-to-full-json', simpleSchema);
+        
+        const fullJsonResponse = await response.data;
+        
+        return JSON.stringify(fullJsonResponse, null, 2);
     }
 }
