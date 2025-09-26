@@ -1,13 +1,14 @@
 import { variables } from 'shared/configs/variables';
 import { ILeadLoversAPIProvider } from 'shared/providers/LeadloversAPI/interfaces/leadloversAPIProvider';
+import { Result } from 'shared/types/defaultResult';
 import { GetLeadsToolInput, GetLeadsToolOutput } from '../presentation/schemas/getLeads';
 
 export class GetLeadsService {
   constructor(private readonly leadloversApi: ILeadLoversAPIProvider) {}
 
-  public async execute(input: GetLeadsToolInput): Promise<GetLeadsToolOutput> {
+  public async execute(input: GetLeadsToolInput): Promise<Result<GetLeadsToolOutput>> {
     try {
-      const response = await this.leadloversApi.get(
+      const response = await this.leadloversApi.get<any, GetLeadsToolOutput>(
         `/Leads?token={token}&page={page}&startDate={startDate}&endDate={endDate}`
           .replace('{token}', encodeURIComponent(variables.leadlovers.API_TOKEN || ''))
           .replace('{page}', encodeURIComponent((input.page || 0).toString()))
@@ -15,49 +16,39 @@ export class GetLeadsService {
           .replace('{endDate}', encodeURIComponent(input.endDate ? input.endDate : ''))
       );
       if (response.isSuccess && response.data) {
-        return response.data;
+        return {
+          isSuccess: true,
+          message: 'Leads fetched successfully',
+          data: response.data as GetLeadsToolOutput,
+        };
       }
       return {
-        Data: [],
-        Links: {
-          Self: null,
-          Next: null,
-          Prev: null,
+        isSuccess: false,
+        message: 'Failed to fetch leads',
+        data: {
+          Data: [],
+          Links: {
+            Self: null,
+            Next: null,
+            Prev: null,
+          },
         },
       };
     } catch (error: any) {
-      if (error.message && error.message.includes('JSON')) {
-        process.stderr.write(`[MCP Server] JSON parsing error in getLeads: ${error.message}\n`);
-        process.stderr.write(
-          `[MCP Server] Raw response might be malformed HTML or text instead of JSON\n`
-        );
-        return {
-          Data: [],
-          Links: {
-            Self: null,
-            Next: null,
-            Prev: null,
-          },
-        };
-      }
-      if (error.response?.data?.Message) {
-        process.stderr.write(`[MCP Server] ${error.response.data.Message}\n`);
-        return {
-          Data: [],
-          Links: {
-            Self: null,
-            Next: null,
-            Prev: null,
-          },
-        };
-      }
-      process.stderr.write(`[MCP Server] Error fetching leads: ${error.message}\n`);
+      let message = 'Failed to fetch leads';
+      if (error.response?.data?.Message) message = error.response.data.Message;
+      if (error.message) message = error.message;
+      process.stderr.write(`[MCP Server] Error fetching leads: ${message}\n`);
       return {
-        Data: [],
-        Links: {
-          Self: null,
-          Next: null,
-          Prev: null,
+        isSuccess: false,
+        message,
+        data: {
+          Data: [],
+          Links: {
+            Self: null,
+            Next: null,
+            Prev: null,
+          },
         },
       };
     }

@@ -1,30 +1,42 @@
 import { CreateEmailContentService } from 'modules/emailMarketing/application/createEmailContentService.';
-import { createEmailContentToolInput, createEmailContentToolOutput } from '../schemas/createEmailContent';
+import { createEmailContentToolInput, CreateEmailContentToolOutput, createEmailContentToolOutput } from '../schemas/createEmailContent';
+import { Result } from 'shared/types/defaultResult';
 
 export class CreateEmailContentHandler {
   constructor(private readonly createEmailContentService: CreateEmailContentService) {}
 
-  public async handle(args: unknown) {
+  public async handle(args: unknown): Promise<Result<CreateEmailContentToolOutput>> {
     const input = createEmailContentToolInput.safeParse(args);
     if (!input.success) {
       process.stderr.write(`[MCP Server] Tool: create_email_content - Error: ${input.error.message}\n`);
       return {
-        status: 'error',
-        text: 'Invalid input',
+        isSuccess: false,
+        message: 'Internal server error',
+        data: null,
       };
     }
     const result = await this.createEmailContentService.execute(input.data);
-    const output = createEmailContentToolOutput.safeParse(result);
+    if (!result.isSuccess) {
+      process.stderr.write(`[MCP Server] Tool: create_email_content - Error: ${result.message}\n`);
+      return {
+        isSuccess: false,
+        message: result.message,
+        data: null,
+      };
+    }
+    const output = createEmailContentToolOutput.safeParse(result.data);
     if (!output.success) {
       process.stderr.write(`[MCP Server] Tool: create_email_content - Error: ${output.error.message}\n`);
       return {
-        status: 'error',
-        text: 'Invalid output',
+        isSuccess: false,
+        message: 'Internal server error',
+        data: null,
       };
     }
     return {
-      status: 'success',
-      text: JSON.stringify(output.data, null, 2),
+      isSuccess: true,
+      message: 'Email content created successfully',
+      data: output.data,
     };
   }
 }

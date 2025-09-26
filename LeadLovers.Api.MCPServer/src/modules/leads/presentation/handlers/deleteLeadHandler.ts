@@ -1,30 +1,42 @@
 import { DeleteLeadService } from 'modules/leads/application/deleteLeadService';
-import { deleteLeadToolInput, deleteLeadToolOutput } from '../schemas/deleteLead';
+import { deleteLeadToolInput, DeleteLeadToolOutput, deleteLeadToolOutput } from '../schemas/deleteLead';
+import { Result } from 'shared/types/defaultResult';
 
 export class DeleteLeadHandler {
   constructor(private readonly deleteLeadService: DeleteLeadService) {}
 
-  public async handle(args: unknown) {
+  public async handle(args: unknown): Promise<Result<DeleteLeadToolOutput>> {
     const input = deleteLeadToolInput.safeParse(args);
     if (!input.success) {
       process.stderr.write(`[MCP Server] Tool: delete_lead - Error: ${input.error.message}\n`);
       return {
-        status: 'error',
-        text: 'Invalid input',
+        isSuccess: false,
+        message: 'Internal server error',
+        data: null,
       };
     }
     const result = await this.deleteLeadService.execute(input.data);
-    const output = deleteLeadToolOutput.safeParse(result);
+    if (!result.isSuccess) {
+      process.stderr.write(`[MCP Server] Tool: delete_lead - Error: ${result.message}\n`);
+      return {
+        isSuccess: false,
+        message: result.message,
+        data: null,
+      };
+    }
+    const output = deleteLeadToolOutput.safeParse(result.data);
     if (!output.success) {
       process.stderr.write(`[MCP Server] Tool: delete_lead - Error: ${output.error.message}\n`);
       return {
-        status: 'error',
-        text: 'Invalid output',
+        isSuccess: false,
+        message: 'Internal server error',
+        data: null,
       };
     }
     return {
-      status: 'success',
-      text: JSON.stringify(output.data, null, 2),
+      isSuccess: true,
+      message: 'Lead deleted successfully',
+      data: output.data,
     };
   }
 }

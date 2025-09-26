@@ -1,5 +1,6 @@
 import { variables } from 'shared/configs/variables';
 import { ILeadLoversAPIProvider } from 'shared/providers/LeadloversAPI/interfaces/leadloversAPIProvider';
+import { Result } from 'shared/types/defaultResult';
 import {
   GetMachineDetailsToolInput,
   GetMachineDetailsToolOutput,
@@ -8,34 +9,40 @@ import {
 export class GetMachineDetailsService {
   constructor(private readonly leadloversApi: ILeadLoversAPIProvider) {}
 
-  public async execute(input: GetMachineDetailsToolInput): Promise<GetMachineDetailsToolOutput> {
+  public async execute(
+    input: GetMachineDetailsToolInput
+  ): Promise<Result<GetMachineDetailsToolOutput>> {
     try {
-      const response = await this.leadloversApi.get(
+      const response = await this.leadloversApi.get<any, GetMachineDetailsToolOutput>(
         `/Machines?token={token}&machineCode={machineCode}&details=1`
           .replace('{token}', encodeURIComponent(variables.leadlovers.API_TOKEN || ''))
           .replace('{machineCode}', encodeURIComponent(input.machineCode.toString()))
       );
       if (response.isSuccess && response.data) {
-        return response.data;
+        return {
+          isSuccess: true,
+          message: 'Machine details fetched successfully',
+          data: response.data as GetMachineDetailsToolOutput,
+        };
       }
       return {
-        Items: [],
+        isSuccess: false,
+        message: 'Failed to fetch machine details',
+        data: {
+          Items: [],
+        },
       };
     } catch (error: any) {
-      if (error.message && error.message.includes('JSON')) {
-        return {
-          Items: [],
-        };
-      }
-      if (error.response?.data?.Message) {
-        process.stderr.write(`[MCP Server] ${error.response.data.Message}\n`);
-        return {
-          Items: [],
-        };
-      }
+      let message = 'Failed to fetch machine details';
+      if (error.response?.data?.Message) message = error.response.data.Message;
+      if (error.message) message = error.message;
       process.stderr.write(`[MCP Server] Error fetching machine details: ${error.message}\n`);
       return {
-        Items: [],
+        isSuccess: false,
+        message,
+        data: {
+          Items: [],
+        },
       };
     }
   }

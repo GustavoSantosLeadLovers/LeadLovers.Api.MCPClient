@@ -1,13 +1,14 @@
 import { variables } from 'shared/configs/variables';
 import { ILeadLoversAPIProvider } from 'shared/providers/LeadloversAPI/interfaces/leadloversAPIProvider';
+import { Result } from 'shared/types/defaultResult';
 import { CreateLeadToolInput, CreateLeadToolOutput } from '../presentation/schemas/createLead';
 
 export class CreateLeadService {
   constructor(private readonly leadloversApi: ILeadLoversAPIProvider) {}
 
-  public async execute(input: CreateLeadToolInput): Promise<CreateLeadToolOutput> {
+  public async execute(input: CreateLeadToolInput): Promise<Result<CreateLeadToolOutput>> {
     try {
-      const response = await this.leadloversApi.post(
+      const response = await this.leadloversApi.post<CreateLeadToolInput, CreateLeadToolOutput>(
         `/Lead?token=${variables.leadlovers.API_TOKEN}`,
         input
       );
@@ -20,19 +21,36 @@ export class CreateLeadService {
           message.toLowerCase().includes('inválido')
         ) {
           return {
-            Message: `Erro ao criar lead: ${message}`,
+            isSuccess: false,
+            message: `Erro ao criar lead: ${message}`,
+            data: {
+              Message: `Erro ao criar lead: ${message}`,
+            },
           };
         }
         return {
-          Message: message,
+          isSuccess: true,
+          message: 'Lead created successfully',
+          data: {
+            Message: message,
+          },
         };
       }
-      return { Message: 'Erro desconhecido ao criar lead' };
+      return {
+        isSuccess: false,
+        message: 'Erro desconhecido ao criar lead',
+        data: { Message: 'Erro desconhecido ao criar lead' },
+      };
     } catch (error: any) {
-      if (error.response?.data?.Message) {
-        return { Message: error.response.data.Message };
-      }
-      return { Message: 'Erro desconhecido ao criar lead' };
+      let message = 'Erro desconhecido ao criar lead';
+      if (error.response?.data?.Message) message = error.response.data.Message;
+      if (error.message) message = error.message;
+      process.stderr.write(`[MCP Server] Error creating lead: ${message}\n`);
+      return {
+        isSuccess: false,
+        message,
+        data: { Message: message },
+      };
     }
   }
 }

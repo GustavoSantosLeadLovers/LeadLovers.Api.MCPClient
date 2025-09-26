@@ -113,10 +113,13 @@ export class McpClientUsingAnthropicProvider implements IMCPClientProvider {
 							logger.info(
 								`Response from tool: ${toolName}: ${(c as ResourceContent).resource.text}`,
 							);
-							toolResult.status = 'success';
-							toolResult.result = JSON.parse(
+							const result = JSON.parse(
 								(c as ResourceContent).resource.text,
 							);
+							toolResult.status = result.isSuccess
+								? 'success'
+								: 'error';
+							toolResult.result = result;
 							return;
 						}
 					});

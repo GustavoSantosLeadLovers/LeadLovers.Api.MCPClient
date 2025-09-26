@@ -20,19 +20,14 @@ const registerGetEmailSequencesTool = (server: McpServer) => {
     },
     async args => {
       const result = await getEmailSequencesHandler.handle(args);
-      if (result.status === 'error') {
-        return {
-          content: [{ type: 'text', text: result.text }],
-        };
-      }
       return {
         content: [
           {
             type: 'resource',
             resource: {
-              uri: 'leadlovers://leads',
+              uri: 'leadlovers://email-sequences',
               mimeType: 'application/json',
-              text: result.text,
+              text: JSON.stringify(result, null, 2),
             },
           },
         ],

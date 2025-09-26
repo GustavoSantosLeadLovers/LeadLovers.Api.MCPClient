@@ -29,11 +29,6 @@ const registerGetLeadsTool = (server: McpServer) => {
     },
     async args => {
       const result = await getLeadsHandler.handle(args);
-      if (result.status === 'error') {
-        return {
-          content: [{ type: 'text', text: result.text }],
-        };
-      }
       return {
         content: [
           {
@@ -41,7 +36,7 @@ const registerGetLeadsTool = (server: McpServer) => {
             resource: {
               uri: 'leadlovers://leads',
               mimeType: 'application/json',
-              text: result.text,
+              text: JSON.stringify(result, null, 2),
             },
           },
         ],
@@ -60,11 +55,6 @@ const registerCreateLeadTool = (server: McpServer) => {
     },
     async args => {
       const result = await createLeadHandler.handle(args);
-      if (result.status === 'error') {
-        return {
-          content: [{ type: 'text', text: result.text }],
-        };
-      }
       return {
         content: [
           {
@@ -72,7 +62,7 @@ const registerCreateLeadTool = (server: McpServer) => {
             resource: {
               uri: 'leadlovers://leads',
               mimeType: 'application/json',
-              text: result.text,
+              text: JSON.stringify(result, null, 2),
             },
           },
         ],
@@ -91,11 +81,6 @@ const registerUpdateLeadTool = (server: McpServer) => {
     },
     async args => {
       const result = await updateLeadHandler.handle(args);
-      if (result.status === 'error') {
-        return {
-          content: [{ type: 'text', text: result.text }],
-        };
-      }
       return {
         content: [
           {
@@ -103,7 +88,7 @@ const registerUpdateLeadTool = (server: McpServer) => {
             resource: {
               uri: 'leadlovers://leads',
               mimeType: 'application/json',
-              text: result.text,
+              text: JSON.stringify(result, null, 2),
             },
           },
         ],
@@ -123,11 +108,6 @@ const registerDeleteLeadTool = (server: McpServer) => {
     },
     async (args: unknown) => {
       const result = await deleteLeadHandler.handle(args);
-      if (result.status === 'error') {
-        return {
-          content: [{ type: 'text', text: result.text }],
-        };
-      }
       return {
         content: [
           {
@@ -135,7 +115,7 @@ const registerDeleteLeadTool = (server: McpServer) => {
             resource: {
               uri: 'leadlovers://leads',
               mimeType: 'application/json',
-              text: result.text,
+              text: JSON.stringify(result, null, 2),
             },
           },
         ],
