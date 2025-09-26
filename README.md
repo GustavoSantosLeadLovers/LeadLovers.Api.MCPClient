@@ -18,15 +18,28 @@
 
 Este monorepo contém a solução completa para integração do LeadLovers CRM com capacidades de IA através do Model Context Protocol (MCP). A plataforma permite automação inteligente de processos de CRM usando comandos naturais e processamento avançado com IA.
 
+### 🎨 Status do Projeto
+
+[![Release](https://img.shields.io/badge/Release-v2.2.1-success)](https://github.com/GustavoSantosLeadLovers/LeadLovers.Api.MCPClient/releases)
+[![Status](https://img.shields.io/badge/Status-Production%20Ready-green)]()
+[![Tests](https://img.shields.io/badge/Tests-In%20Development-yellow)]()
+[![Docs](https://img.shields.io/badge/Docs-90%25-blue)]()
+
 ### 🎯 Principais Funcionalidades
 
-- **🤖 Integração com IA**: Suporte para OpenAI e Claude via MCP
+#### ✅ Implementadas
+- **🤖 Integração com IA**: Anthropic Claude para geração de conteúdo
 - **🔌 API REST/WebSocket**: Interface completa para comunicação em tempo real
 - **🔐 Autenticação SSO**: Integração segura com LeadLovers SSO
-- **📊 Gestão de Leads**: CRUD completo e operações em lote
+- **📊 Gestão de Leads**: CRUD completo com validação Zod
+- **📧 Email Marketing**: Geração de conteúdo com IA + BeeFree Builder
+- **🏭 Gestão de Máquinas**: Listagem e detalhamento de funis
+- **📬 Sequências de Email**: Gerenciamento de sequências automatizadas
+
+#### 🔄 Em Desenvolvimento
 - **🚀 Automação**: Processos inteligentes de scoring e segmentação
 - **📈 Analytics**: Métricas e insights em tempo real
-- **📧 Email Marketing**: Geração de conteúdo de email com IA usando Anthropic e BeeFree
+- **🧪 Testes**: Cobertura completa de testes unitários e integração
 
 ## 🏗️ Arquitetura
 
@@ -40,25 +53,32 @@ LeadLovers.Api.MCPClient/
 │   │   ├── modules/              # Módulos de domínio
 │   │   │   ├── identity/         # Autenticação SSO
 │   │   │   ├── monitor/          # Health checks
-│   │   │   └── prompt/           # Processamento de prompts
+│   │   │   ├── prompt/           # Processamento de prompts
+│   │   │   └── websocket/        # Gerenciamento WebSocket
 │   │   └── shared/               # Recursos compartilhados
 │   └── dist/                     # Build de produção
 │
-└── 📁 LeadLovers.Api.MCPServer   # MCP Server & AI Tools
+└── 📁 LeadLovers.Api.MCPServer   # MCP Server & AI Tools (v2.2.1)
     ├── src/
-    │   ├── server/               # Configuração MCP
+    │   ├── infra/                # Infraestrutura MCP
+    │   ├── server/               # Configuração do servidor MCP
     │   ├── tools/                # Ferramentas MCP
-    │   │   ├── leads/            # Gestão de leads
-    │   │   ├── machines/         # Gestão de máquinas/funis
-    │   │   ├── email-sequence/   # Sequências de email
-    │   │   └── emailMarketing.ts # Geração de conteúdo de email
-    │   ├── modules/              # Módulos de domínio
-    │   │   └── emailMarketing/   # Módulo de email marketing
+    │   │   ├── leads.ts          # Operações CRUD de leads
+    │   │   ├── machines.ts       # Gestão de máquinas/funis
+    │   │   ├── email-sequence.ts # Sequências de email
+    │   │   └── emailMarketing.ts # Geração de conteúdo com IA
+    │   ├── modules/              # Módulos de domínio (Clean Architecture)
+    │   │   ├── leads/            # Domínio de leads
+    │   │   ├── machines/         # Domínio de máquinas
+    │   │   ├── emailSequences/   # Domínio de sequências
+    │   │   └── emailMarketing/   # Domínio de email marketing
     │   ├── shared/               # Recursos compartilhados
     │   │   ├── configs/          # Configurações e variáveis
-    │   │   └── providers/        # Provedores de serviços
-    │   │       ├── AIAPI/        # Integração com Anthropic
-    │   │       └── BuilderProvider/ # Integração com BeeFree
+    │   │   ├── types/            # Definições TypeScript
+    │   │   └── providers/        # Integrações externas
+    │   │       ├── LeadloversAPI/    # Cliente API LeadLovers
+    │   │       ├── AIAPI/            # Anthropic Claude
+    │   │       └── BuiderProvider/   # BeeFree Email Builder
     │   └── utils/                # Utilitários e helpers
     └── dist/                     # Build de produção
 ```
@@ -153,6 +173,28 @@ pnpm dev
 
 - [Claude Guide](./LeadLovers.Api.MCPServer/CLAUDE.md)
 - [Ferramentas MCP](./LeadLovers.Api.MCPServer/docs/TOOLS.md)
+
+## 🛠️ Ferramentas MCP Disponíveis
+
+### 📊 Gestão de Leads
+| Ferramenta | Descrição | Status |
+|------------|-----------|--------|
+| `get_leads` | Busca leads com filtros e paginação | ✅ Implementado |
+| `create_lead` | Cria novo lead com validação | ✅ Implementado |
+| `update_lead` | Atualiza dados do lead | ✅ Implementado |
+| `delete_lead` | Remove lead de funis/sequências | ✅ Implementado |
+
+### 🏭 Gestão de Máquinas
+| Ferramenta | Descrição | Status |
+|------------|-----------|--------|
+| `get_machines` | Lista todas as máquinas | ✅ Implementado |
+| `get_machine_details` | Detalhes de uma máquina | ✅ Implementado |
+
+### 📧 Email Marketing
+| Ferramenta | Descrição | Status |
+|------------|-----------|--------|
+| `get_email_sequences` | Lista sequências de email | ✅ Implementado |
+| `create_email_content` | Gera conteúdo com IA + BeeFree | ✅ Implementado |
 
 ## 🔌 API Reference
 
@@ -300,12 +342,19 @@ LEADLOVERS_API_URL=https://app.leadlovers.com
 LEADLOVERS_API_TOKEN=your_token
 
 # AI Services
-OPENAI_API_KEY=your_openai_key
 ANTHROPIC_API_KEY=your_claude_key
+ANTHROPIC_MODEL=claude-3-haiku-20240307
+
+# BeeFree Email Builder
+BEEFREE_API_URL=https://api.beefree.io
+BEEFREE_API_TOKEN=your_beefree_token
+
+# OpenAI (opcional)
+OPENAI_API_KEY=your_openai_key
 
 # MCP
 MCP_SERVER_NAME=leadlovers-mcp
-MCP_SERVER_VERSION=2.0.0
+MCP_SERVER_VERSION=2.2.1
 ```
 
 ## 🔄 CI/CD
@@ -339,22 +388,40 @@ O projeto utiliza GitHub Actions para automação:
 
 ## 📊 Status do Projeto
 
-- ✅ Infraestrutura base completa
-- ✅ Autenticação SSO implementada
-- ✅ WebSocket com Redis
-- ✅ Ferramentas MCP básicas
-- ⏳ Integração completa Client ↔ Server
-- ⏳ Processamento com IA (OpenAI/Claude)
-- 📋 Scoring inteligente de leads
-- 📋 Dashboard analytics
+### ✅ Implementado
+- Infraestrutura base completa com TypeScript
+- Autenticação SSO com LeadLovers
+- WebSocket com Socket.io e Redis
+- 8 ferramentas MCP funcionais
+- Integração completa Client ↔ Server via stdio
+- Processamento com IA (Anthropic Claude)
+- Geração de email com BeeFree Builder
+- Validação robusta com Zod
+- Clean Architecture em todos os módulos
+
+### 🔄 Em Desenvolvimento
+- Testes unitários e de integração
+- Documentação técnica completa
+- Rate limiting avançado
+- Logs estruturados com Pino
+
+### 📋 Backlog
+- Scoring inteligente de leads com IA
+- Dashboard analytics em tempo real
+- Integração com OpenAI GPT-4
+- Automação de pipelines
+- Webhooks e eventos
 
 ## 🛡️ Segurança
 
-- Autenticação JWT obrigatória
-- Rate limiting implementado
-- Validação de entrada com Zod
-- CORS configurável por ambiente
-- Secrets via environment variables
+- **Autenticação**: JWT obrigatória com refresh tokens
+- **Validação**: Schemas Zod em todas as entradas
+- **Rate Limiting**: Controle de requisições por IP
+- **CORS**: Política configurável por ambiente
+- **Secrets**: Variáveis de ambiente isoladas
+- **Sanitização**: Limpeza de respostas JSON da IA
+- **Timeout**: Limites configuráveis em todas as APIs
+- **Error Handling**: Tratamento padronizado com Result pattern
 
 ## 📄 Licença
 

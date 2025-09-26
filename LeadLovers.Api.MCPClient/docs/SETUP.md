@@ -1,4 +1,6 @@
-# Guia de Instalação e Configuração
+# Guia de Instalação e Configuração - LeadLovers MCP Platform
+
+> 🚀 Guia completo para instalação e configuração do monorepo LeadLovers MCP (Client + Server)
 
 ## 📋 Pré-requisitos
 
@@ -6,7 +8,9 @@
 
 - **Node.js**: versão 20.x ou superior
 - **npm**: versão 10.x ou superior (incluso com Node.js)
+- **pnpm**: versão 10.15.1 ou superior (para MCPServer)
 - **Git**: para clonar o repositório
+- **Redis** (opcional): para cache de sessões em produção
 
 ### Verificação de Pré-requisitos
 
@@ -18,6 +22,11 @@ node --version
 # Verificar versão do npm
 npm --version
 # Deve retornar 10.x.x ou superior
+
+# Instalar pnpm globalmente (necessário para MCPServer)
+npm install -g pnpm@10.15.1
+pnpm --version
+# Deve retornar 10.15.1
 
 # Verificar se o Git está instalado
 git --version
@@ -34,24 +43,42 @@ git clone https://github.com/GustavoSantosLeadLovers/LeadLovers.Api.MCPClient.gi
 # OU via SSH (se configurado)
 git clone git@github.com:GustavoSantosLeadLovers/LeadLovers.Api.MCPClient.git
 
-# Navegue para o diretório
+# Navegue para o diretório do projeto
 cd LeadLovers.Api.MCPClient
 ```
 
 ### 2. Instalar Dependências
 
+#### MCPClient (API Gateway)
 ```bash
-# Instalar todas as dependências
+# Navegar para o diretório do MCPClient
+cd LeadLovers.Api.MCPClient
+
+# Instalar dependências com npm
 npm install
 
 # Verificar se a instalação foi bem-sucedida
 npm list --depth=0
 ```
 
+#### MCPServer (MCP Tools)
+```bash
+# Navegar para o diretório do MCPServer
+cd ../LeadLovers.Api.MCPServer
+
+# Instalar dependências com pnpm
+pnpm install
+
+# Verificar se a instalação foi bem-sucedida
+pnpm list --depth=0
+```
+
 ### 3. Configurar Variáveis de Ambiente
 
+#### MCPClient
 ```bash
-# Copiar arquivo de exemplo
+# No diretório LeadLovers.Api.MCPClient
+cd ../LeadLovers.Api.MCPClient
 cp .env.example .env
 
 # Editar arquivo de configuração
@@ -59,8 +86,20 @@ cp .env.example .env
 # No macOS/Linux: nano .env ou vim .env
 ```
 
-### 4. Configurar o arquivo .env
+#### MCPServer
+```bash
+# No diretório LeadLovers.Api.MCPServer
+cd ../LeadLovers.Api.MCPServer
+cp .env.example .env
 
+# Editar arquivo de configuração
+# No Windows: notepad .env
+# No macOS/Linux: nano .env ou vim .env
+```
+
+### 4. Configurar os arquivos .env
+
+#### MCPClient (.env)
 ```bash
 # =============================================================================
 # CONFIGURAÇÃO DO SERVIDOR
@@ -72,7 +111,7 @@ NODE_ENV=development
 # Porta do servidor (padrão: 4444)
 PORT=4444
 
-# Versão da aplicação (usado na documentação)
+# Versão da aplicação
 VERSION=1.0.0
 
 # URLs permitidas para CORS (separadas por vírgula)
@@ -94,18 +133,74 @@ LOG_LEVEL=info
 SSO_API_URL=https://sso.leadlovers.com/
 
 # Chave secreta para JWT (mude para uma chave segura em produção)
-API_SECRET=TESTE
+API_SECRET=sua_chave_secreta_aqui
 
 # =============================================================================
-# CONFIGURAÇÕES FUTURAS (MCP/IA)
+# CONFIGURAÇÃO DO REDIS (opcional)
 # =============================================================================
 
-# API Key da Anthropic (quando implementado)
-# ANTHROPIC_API_KEY=your-api-key-here
+# URL de conexão com Redis
+# REDIS_URL=redis://localhost:6379
 
-# Configurações MCP (quando implementado)  
-# MCP_SERVER_URL=
-# MCP_AUTH_TOKEN=
+# =============================================================================
+# CONFIGURAÇÃO DO WEBSOCKET
+# =============================================================================
+
+# Timeout de conexão WebSocket (ms)
+WS_CONNECTION_TIMEOUT=10000
+
+# Intervalo de ping/pong (ms)
+WS_PING_INTERVAL=30000
+```
+
+#### MCPServer (.env)
+```bash
+# =============================================================================
+# CONFIGURAÇÃO DO LEADLOVERS
+# =============================================================================
+
+# URL da API LeadLovers
+LEADLOVERS_API_URL=https://api.leadlovers.com
+
+# Token de autenticação da API
+LEADLOVERS_API_TOKEN=seu_token_leadlovers
+
+# =============================================================================
+# CONFIGURAÇÃO DE IA
+# =============================================================================
+
+# Anthropic Claude API
+ANTHROPIC_API_KEY=sua_chave_anthropic
+ANTHROPIC_MODEL=claude-3-haiku-20240307
+
+# OpenAI (opcional, para futuras integrações)
+# OPENAI_API_KEY=sua_chave_openai
+
+# =============================================================================
+# CONFIGURAÇÃO DO BEEFREE
+# =============================================================================
+
+# BeeFree Email Builder
+BEEFREE_API_URL=https://api.beefree.io
+BEEFREE_API_TOKEN=seu_token_beefree
+
+# =============================================================================
+# CONFIGURAÇÃO DO MCP
+# =============================================================================
+
+# Nome e versão do servidor MCP
+MCP_SERVER_NAME=leadlovers-mcp
+MCP_SERVER_VERSION=2.2.1
+
+# =============================================================================
+# LIMITES E SEGURANÇA
+# =============================================================================
+
+# Máximo de operações em lote
+MAX_BULK_OPERATIONS=100
+
+# Rate limit (requisições por hora)
+RATE_LIMIT=1000
 ```
 
 ## ⚙️ Configurações Detalhadas
@@ -203,14 +298,28 @@ npm run lint
 
 ### 3. Iniciar em Modo Desenvolvimento
 
+#### Iniciar MCPClient (Terminal 1)
 ```bash
-# Iniciar servidor de desenvolvimento
+# No diretório LeadLovers.Api.MCPClient
+cd LeadLovers.Api.MCPClient
 npm run dev
 
 # Verificar se o servidor iniciou corretamente
 # Deve exibir:
 # - "Swagger documentation available at /api-docs"
 # - "Server running in port: 4444"
+```
+
+#### Iniciar MCPServer (Terminal 2)
+```bash
+# No diretório LeadLovers.Api.MCPServer
+cd LeadLovers.Api.MCPServer
+pnpm dev
+
+# Verificar se o servidor MCP iniciou corretamente
+# Deve exibir:
+# - "MCP Server started successfully"
+# - "Available tools: 8"
 ```
 
 ### 4. Testar Endpoints
@@ -231,11 +340,18 @@ curl http://localhost:4444/v1/health
 }
 ```
 
-### 5. Acessar Documentação
+### 5. Acessar Documentação e Endpoints
 
 Abra o navegador e acesse:
-- **API**: http://localhost:4444/v1/health
+
+#### MCPClient
+- **Health Check**: http://localhost:4444/v1/health
 - **Documentação Swagger**: http://localhost:4444/api-docs
+- **WebSocket**: ws://localhost:4444
+
+#### MCPServer
+- O servidor MCP não possui interface web, ele se comunica via stdio com o MCPClient
+- As ferramentas MCP são acessadas através do MCPClient
 
 ## 🔧 Resolução de Problemas
 
@@ -284,42 +400,76 @@ npm config set prefix ~/.npm-global
 export PATH=~/.npm-global/bin:$PATH
 ```
 
-## 🐳 Configuração com Docker (Futuro)
+## 🐳 Configuração com Docker
 
-```dockerfile
-# Dockerfile (planejado)
-FROM node:20-alpine
-
-WORKDIR /app
-
-COPY package*.json ./
-RUN npm ci --only=production
-
-COPY dist/ ./dist/
-COPY src/shared/configs/ ./src/shared/configs/
-
-EXPOSE 4444
-
-CMD ["npm", "start"]
-```
+### Docker Compose (Recomendado)
 
 ```yaml
-# docker-compose.yml (planejado)
+# docker-compose.yml
 version: '3.8'
 
 services:
-  leadlovers-mcp-client:
-    build: .
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  mcp-client:
+    build:
+      context: ./LeadLovers.Api.MCPClient
+      dockerfile: Dockerfile
     ports:
       - "4444:4444"
     environment:
       - NODE_ENV=production
       - PORT=4444
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+    volumes:
+      - ./LeadLovers.Api.MCPClient/.env:/app/.env:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:4444/v1/health"]
       interval: 30s
       timeout: 10s
       retries: 3
+
+  mcp-server:
+    build:
+      context: ./LeadLovers.Api.MCPServer
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./LeadLovers.Api.MCPServer/.env:/app/.env:ro
+    stdin_open: true
+    tty: true
+
+volumes:
+  redis_data:
+```
+
+### Executar com Docker Compose
+
+```bash
+# Build e iniciar todos os serviços
+docker-compose up -d
+
+# Ver logs
+docker-compose logs -f
+
+# Parar serviços
+docker-compose down
+
+# Rebuild após mudanças
+docker-compose up -d --build
 ```
 
 ## 📝 Configuração do IDE
@@ -378,10 +528,30 @@ Launch configuration (`.vscode/launch.json`):
 
 Após a instalação bem-sucedida:
 
-1. **Explore a Documentação**: Acesse `/api-docs` para conhecer a API
-2. **Execute os Testes**: `npm test` (quando implementados)
-3. **Contribua**: Leia o [CONTRIBUTING.md](CONTRIBUTING.md)
-4. **Deploy**: Consulte o [DEPLOYMENT.md](DEPLOYMENT.md) (futuro)
+1. **Explore a Documentação**:
+   - Swagger UI: http://localhost:4444/api-docs
+   - [API Documentation](../docs/API.md)
+   - [Architecture](./ARCHITECTURE.md)
+
+2. **Teste as Ferramentas MCP**:
+   - Use o WebSocket para enviar comandos
+   - Teste criação de leads
+   - Experimente geração de email com IA
+
+3. **Configure Integrações**:
+   - Obtenha tokens da API LeadLovers
+   - Configure chave da Anthropic
+   - Setup do BeeFree (opcional)
+
+4. **Contribua**:
+   - Leia o [CONTRIBUTING.md](../CONTRIBUTING.md)
+   - Verifique issues abertas
+   - Submeta pull requests
+
+5. **Deploy em Produção**:
+   - Configure variáveis de produção
+   - Setup Redis para cache
+   - Configure monitoramento
 
 ## 🆘 Suporte
 

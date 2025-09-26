@@ -1,15 +1,18 @@
-# WebSocket Server Documentation
+# WebSocket Server Documentation - LeadLovers MCP Client
+
+> 🔌 Documentação completa do servidor WebSocket para comunicação em tempo real com integração MCP
 
 ## Overview
 
-O servidor WebSocket fornece comunicação em tempo real entre clientes e o servidor, com autenticação JWT, gerenciamento de sessões únicas por usuário e integração com Redis para persistência.
+O servidor WebSocket fornece comunicação em tempo real entre clientes e o servidor MCP, com autenticação JWT, gerenciamento de sessões únicas por usuário, integração com Redis para persistência e processamento de comandos via MCP Server.
 
 ## Tecnologias Utilizadas
 
-- **Socket.IO**: Framework WebSocket com fallback automático
-- **Redis**: Cache e persistência de conexões
-- **JWT**: Autenticação de clientes
-- **TypeScript**: Type safety e melhor developer experience
+- **Socket.IO v4.8**: Framework WebSocket com fallback automático
+- **Redis v4.7**: Cache e persistência de conexões
+- **JWT**: Autenticação de clientes via LeadLovers SSO
+- **TypeScript v5.9**: Type safety e melhor developer experience
+- **MCP SDK**: Integração com Model Context Protocol
 
 ## Arquitetura
 
@@ -78,23 +81,48 @@ O servidor garante que cada usuário tenha apenas uma conexão ativa:
 #### Cliente → Servidor
 
 ##### `send-prompt`
-Envia um prompt para processamento.
+Envia um prompt para processamento pelo MCP Server.
 
 ```javascript
 socket.emit('send-prompt', {
-  prompt: 'Sua mensagem aqui'
+  prompt: 'Criar um lead chamado João Silva com email joao@example.com'
 });
 ```
+
+**Parâmetros**:
+- `prompt` (string, obrigatório): Comando em linguagem natural para o MCP processar
+
+**Exemplos de prompts**:
+- "Liste todas as máquinas disponíveis"
+- "Crie um lead para Maria Santos"
+- "Gere um email de boas-vindas para novos assinantes"
+- "Busque leads da máquina 12345"
 
 #### Servidor → Cliente
 
 ##### `prompt-response`
-Resposta ao prompt enviado.
+Resposta do MCP Server ao prompt enviado.
 
 ```javascript
 socket.on('prompt-response', (response) => {
-  console.log('Resposta:', response);
+  console.log('Resposta do MCP:', response);
+  // response contém o resultado da ferramenta MCP executada
 });
+```
+
+**Formato da resposta**:
+```typescript
+interface PromptResponse {
+  isSuccess: boolean;
+  data?: any;
+  message?: string;
+  error?: string;
+  tool?: string; // Ferramenta MCP utilizada
+  metadata?: {
+    executionTime: number;
+    model?: string;
+  };
+}
 ```
 
 ##### `error`
@@ -111,18 +139,22 @@ socket.on('error', (error) => {
 ### Variáveis de Ambiente
 
 ```env
-# Porta do servidor WebSocket (padrão: 3001)
-PORT=3001
+# Porta do servidor HTTP/WebSocket (padrão: 4444)
+PORT=4444
 
 # URLs permitidas para CORS
-DOMAIN_URL=http://localhost:3000,http://app.example.com
+DOMAIN_URL=http://localhost:3000,https://app.leadlovers.com
 
-# Redis
+# Redis (opcional em desenvolvimento)
 REDIS_URL=redis://localhost:6379
 REDIS_PASSWORD=opcional
 
-# JWT
-JWT_SECRET=seu-secret-jwt
+# JWT/SSO
+SSO_API_URL=https://sso.leadlovers.com/
+API_SECRET=sua_chave_secreta
+
+# MCP Server (quando conectado)
+MCP_SERVER_PATH=/caminho/para/LeadLovers.Api.MCPServer
 ```
 
 ### Docker Compose
@@ -159,10 +191,14 @@ src/shared/providers/Redis/
 import { io } from 'socket.io-client';
 
 // Conectar ao servidor
-const socket = io('http://localhost:3001', {
+const socket = io('http://localhost:4444', {
   auth: {
     token: localStorage.getItem('jwt-token')
-  }
+  },
+  transports: ['websocket', 'polling'], // Ordem de preferência
+  reconnection: true,
+  reconnectionAttempts: 5,
+  reconnectionDelay: 1000
 });
 
 // Eventos de conexão
@@ -174,14 +210,31 @@ socket.on('disconnect', (reason) => {
   console.log('Desconectado:', reason);
 });
 
-// Enviar prompt
+// Exemplos de uso com MCP
+
+// Criar um lead
 socket.emit('send-prompt', {
-  prompt: 'Como posso ajudar?'
+  prompt: 'Crie um lead chamado Carlos Silva, email carlos@empresa.com, telefone 11987654321, na máquina 12345'
+});
+
+// Buscar leads
+socket.emit('send-prompt', {
+  prompt: 'Liste os leads da máquina 12345'
+});
+
+// Gerar conteúdo de email
+socket.emit('send-prompt', {
+  prompt: 'Crie um email de Black Friday com 50% de desconto para curso de marketing'
 });
 
 // Receber resposta
 socket.on('prompt-response', (response) => {
-  console.log('Resposta recebida:', response);
+  if (response.isSuccess) {
+    console.log('Sucesso:', response.data);
+    console.log('Ferramenta MCP usada:', response.tool);
+  } else {
+    console.error('Erro:', response.error);
+  }
 });
 
 // Tratar erros
@@ -283,19 +336,55 @@ GET ws:user:connection:<user-id>
 - Uso de memória do Redis
 - Latência de rede
 
+## Integração com MCP Server
+
+### Fluxo de Processamento
+
+```mermaid
+graph LR
+    A[Cliente Web] -->|WebSocket| B[MCPClient]
+    B -->|Autentica| C[SSO LeadLovers]
+    B -->|Prompt| D[Prompt Handler]
+    D -->|stdio| E[MCP Server]
+    E -->|Tool Call| F[LeadLovers API]
+    E -->|AI Call| G[Anthropic/OpenAI]
+    E -->|Response| D
+    D -->|WebSocket| A
+```
+
+### Ferramentas MCP Disponíveis via WebSocket
+
+| Ferramenta | Descrição | Exemplo de Prompt |
+|------------|-----------|-------------------|
+| `get_leads` | Buscar leads | "Liste os leads da máquina X" |
+| `create_lead` | Criar lead | "Crie um lead chamado..." |
+| `update_lead` | Atualizar lead | "Atualize o score do lead X" |
+| `delete_lead` | Remover lead | "Remova o lead X da máquina Y" |
+| `get_machines` | Listar máquinas | "Mostre todas as máquinas" |
+| `get_machine_details` | Detalhes de máquina | "Detalhes da máquina X" |
+| `get_email_sequences` | Sequências de email | "Liste sequências da máquina X" |
+| `create_email_content` | Gerar email com IA | "Crie um email de..." |
+
 ## Roadmap
 
 ### Implementado ✅
-- Servidor WebSocket básico
-- Autenticação JWT
+- Servidor WebSocket com Socket.IO
+- Autenticação JWT via SSO
 - Integração com Redis
 - Conexão única por usuário
-- Eventos de prompt
+- Processamento de prompts via MCP
+- Integração com 8 ferramentas MCP
+
+### Em Desenvolvimento 🔄
+- [ ] Streaming de respostas longas
+- [ ] Histórico de comandos
+- [ ] Sugestões inteligentes
 
 ### Planejado 📋
-- [ ] Rooms/namespaces para segregação
+- [ ] Rooms para organizações
 - [ ] Rate limiting por usuário
-- [ ] Métricas e dashboards
-- [ ] Clustering para escalabilidade
+- [ ] Métricas e analytics em tempo real
+- [ ] Clustering para alta disponibilidade
 - [ ] Persistência de mensagens
-- [ ] Reconexão automática com state recovery
+- [ ] Voice commands via Web Audio API
+- [ ] Notificações push
