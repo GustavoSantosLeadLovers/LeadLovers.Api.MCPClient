@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm build:*)",
+      "Read(//d/leadlovers/Repositorios/LeadLovers.Api.MCPClient/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

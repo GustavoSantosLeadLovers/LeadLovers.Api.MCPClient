@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+- feat: implementação da tool `create_email_content` para geração de conteúdo de email marketing com IA
+- feat: integração com Anthropic Claude API para processamento de linguagem natural
+- feat: integração com BeeFree Email Builder para criação de templates visuais
+- feat: módulo completo de Email Marketing com arquitetura Clean Architecture (domain, application, presentation)
+- feat: providers AIAPI e BuilderProvider para abstrair integrações externas
+
+### Changed
+- refactor: reorganização da estrutura de pastas, movendo serviços para shared/providers
+- refactor: remoção das pastas services e schemas do nível raiz
+- refactor: centralização de configurações em shared/configs
+
 ## [v2.1.0] - 2025-09-24
 
 ### Changes
