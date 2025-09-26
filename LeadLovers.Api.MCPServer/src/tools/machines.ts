@@ -25,11 +25,6 @@ const registerGetMachinesTool = (server: McpServer) => {
     },
     async args => {
       const result = await getMachinesHandler.handle(args);
-      if (result.status === 'error') {
-        return {
-          content: [{ type: 'text', text: result.text }],
-        };
-      }
       return {
         content: [
           {
@@ -37,7 +32,7 @@ const registerGetMachinesTool = (server: McpServer) => {
             resource: {
               uri: 'leadlovers://machines',
               mimeType: 'application/json',
-              text: result.text,
+              text: JSON.stringify(result, null, 2),
             },
           },
         ],
@@ -56,11 +51,6 @@ const registerGetMachineDetailsTool = (server: McpServer) => {
     },
     async args => {
       const result = await getMachineDetailsHandler.handle(args);
-      if (result.status === 'error') {
-        return {
-          content: [{ type: 'text', text: result.text }],
-        };
-      }
       return {
         content: [
           {
@@ -68,7 +58,7 @@ const registerGetMachineDetailsTool = (server: McpServer) => {
             resource: {
               uri: 'leadlovers://machines',
               mimeType: 'application/json',
-              text: result.text,
+              text: JSON.stringify(result, null, 2),
             },
           },
         ],

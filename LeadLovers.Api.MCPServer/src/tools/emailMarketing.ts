@@ -17,24 +17,19 @@ const registerCreateContentTool = (server: McpServer) => {
     'create_email_content',
     {
       title: 'Create a e-mail content',
-      description: "Create a email marketing content based on the provided information.",
+      description: 'Create a email marketing content based on the provided information.',
       inputSchema: createEmailContentInputShape,
     },
     async args => {
       const result = await createEmailContentHandler.handle(args);
-      if (result.status === 'error') {
-        return {
-          content: [{ type: 'text', text: result.text }],
-        };
-      }
       return {
         content: [
           {
             type: 'resource',
             resource: {
-              uri: 'leadlovers://leads',
+              uri: 'leadlovers://email-marketing',
               mimeType: 'application/json',
-              text: result.text,
+              text: JSON.stringify(result, null, 2),
             },
           },
         ],
