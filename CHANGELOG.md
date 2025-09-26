@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v2.2.3] - 2025-09-26
+
+### Changes
+
+#### Bug Fixes
+- Merge pull request #16 from GustavoSantosLeadLovers/fix/get-machines-tool (6426b57)
+- fix: corrige parsing da resposta da API em getMachinesHandler (8014a1b)
+
+
+
+All notable changes to this project will be documented in this file.
+
 ## [v2.2.2] - 2025-09-26
 
 ### Changes
